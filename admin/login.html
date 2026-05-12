@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Clean Torque Detailing</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #090909;
+      --surface: #111111;
+      --border:  #222222;
+      --text:    #E0E0E0;
+      --muted:   #6B6B6B;
+      --blue:    #1A6FFF;
+      --error:   #EF4444;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+    }
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .logo-img { height: 80px; width: auto; mix-blend-mode: screen; }
+    h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; }
+    p  { font-size: .85rem; color: var(--muted); margin-bottom: 28px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    label  { font-size: .75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    input  {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--blue); }
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: .9rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn:hover   { opacity: .88; }
+    .btn:active  { transform: scale(.98); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .btn-secondary:hover { color: var(--text); border-color: var(--text); }
+    .error {
+      background: rgba(239,68,68,.08);
+      border: 1px solid rgba(239,68,68,.25);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: .83rem;
+      color: var(--error);
+      margin-bottom: 16px;
+      display: none;
+    }
+    .error.show { display: block; }
+    .totp-hint {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 10px;
+      margin-bottom: 4px;
+      line-height: 1.5;
+    }
+    .back { display: block; text-align: center; margin-top: 20px; font-size: .8rem; color: var(--muted); text-decoration: none; }
+    .back:hover { color: var(--text); }
+    .step { display: none; }
+    .step.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <img src="../Brand_Assets/logo_cropped.png" alt="Clean Torque Detailing" class="logo-img" />
+    </div>
+
+    <div class="error" id="errorMsg"></div>
+
+    <!-- Step 1: credentials -->
+    <div class="step active" id="step1">
+      <h1>Sign in</h1>
+      <p>Access restricted to authorised staff only.</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" placeholder="admin" required maxlength="100" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" placeholder="••••••••" required maxlength="200" />
+        </div>
+        <button type="submit" class="btn" id="loginBtn">Sign In</button>
+      </form>
+    </div>
+
+    <!-- Step 2: TOTP -->
+    <div class="step" id="step2">
+      <h1>Two-factor auth</h1>
+      <p>Open your authenticator app and enter the 6-digit code.</p>
+      <form id="totpForm">
+        <div class="field">
+          <label for="totpCode">Authenticator code</label>
+          <input type="text" id="totpCode" name="totpCode" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9 ]{6,7}" placeholder="000000" maxlength="7" required />
+        </div>
+        <p class="totp-hint">Code refreshes every 30 seconds. If it fails, wait for the next one.</p>
+        <button type="submit" class="btn" id="totpBtn">Verify</button>
+        <button type="button" class="btn btn-secondary" id="backBtn">← Back</button>
+      </form>
+    </div>
+
+    <a href="/" class="back">← Back to website</a>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

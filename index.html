@@ -1,0 +1,2254 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clean Torque Detailing &mdash; Vehicle Appearance Specialists</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* â”€â”€â”€ TOKENS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    :root {
+      --black:    #0D0D0D;
+      --navy:     #0A1628;
+      --blue:     #1A6FFF;
+      --blue-dim: #0D3D99;
+      --silver:   #C4C4C4;
+      --silver-lo:#6B6B6B;
+      --white:    #F5F5F5;
+      --bronze:   #CD7F32;
+      --bronze-lo:#7A4A1A;
+      --silvertier:#A8A9AD;
+      --silvertier-lo:#5A5A5A;
+      --gold:     #D4AF37;
+      --gold-lo:  #7A6010;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+      --radius: 12px;
+      --radius-sm: 6px;
+    }
+
+    /* â”€â”€â”€ RESET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ul { list-style: none; }
+
+    /* â”€â”€â”€ NOISE TEXTURE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    /* â”€â”€â”€ UTILS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .container { width: min(1200px, 90vw); margin-inline: auto; }
+    .section { padding: 100px 0; position: relative; z-index: 1; }
+    .section-label {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 5vw, 4.2rem);
+      letter-spacing: 0.06em;
+      line-height: 1;
+      color: var(--white);
+    }
+    .section-sub {
+      color: var(--silver-lo);
+      font-size: 1rem;
+      margin-top: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: .75rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: .85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn:hover  { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      box-shadow: 0 4px 24px rgba(26,111,255,.35);
+    }
+    .btn-primary:hover { background: #2a80ff; box-shadow: 0 6px 32px rgba(26,111,255,.5); }
+    .btn-outline {
+      background: transparent;
+      color: var(--silver);
+      border: 1px solid var(--silver-lo);
+    }
+    .btn-outline:hover { border-color: var(--silver); color: var(--white); }
+    .btn-silver {
+      background: var(--silver);
+      color: var(--black);
+      box-shadow: 0 4px 20px rgba(196,196,196,.2);
+    }
+    .btn-silver:hover { background: #d8d8d8; }
+
+    /* â”€â”€â”€ FADE-IN ON SCROLL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s cubic-bezier(.25,.46,.45,.94);
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       NAV
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      transition: background 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(13,13,13,.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 12px 0;
+      box-shadow: 0 1px 0 rgba(196,196,196,.08);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav-logo-img { height: 48px; width: auto; mix-blend-mode: screen; }
+    .nav-logo-text {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 0.14em;
+      line-height: 1.15;
+    }
+    .nav-logo-text span { color: var(--blue); }
+    .nav-logo-sub {
+      font-size: .6rem;
+      letter-spacing: 0.22em;
+      color: var(--silver-lo);
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+    .nav-links a {
+      font-size: .78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--silver);
+      font-weight: 500;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--blue);
+      transition: width 0.25s ease;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-socials {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .nav-socials a {
+      color: var(--silver-lo);
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: flex;
+    }
+    .nav-socials a:hover { color: var(--blue); transform: translateY(-2px); }
+    .nav-cta { margin-left: 8px; }
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--silver);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: 70px;
+      background: rgba(13,13,13,.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 99;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      letter-spacing: 0.1em;
+      color: var(--silver);
+    }
+    .nav-mobile a:hover { color: var(--white); }
+
+    @media (max-width: 900px) {
+      .nav-links, .nav-socials, .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       HERO
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 80px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 55%, rgba(26,111,255,.12) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(26,111,255,.06) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(13,13,13,0) 0%, rgba(13,13,13,.7) 70%, var(--black) 100%),
+        url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80') center/cover no-repeat;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(13,13,13,.55);
+    }
+    /* shimmer sweep */
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(196,196,196,.06) 50%, transparent 60%);
+      background-size: 200% 100%;
+      animation: shimmer 6s infinite ease-in-out;
+      z-index: 1;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--blue);
+      border: 1px solid rgba(26,111,255,.3);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 8px var(--blue);
+    }
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      line-height: .95;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+    .hero-headline em {
+      font-style: normal;
+      -webkit-text-stroke: 1px var(--silver-lo);
+      color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--silver);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+      font-weight: 300;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--silver-lo);
+      font-size: .65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--silver-lo), transparent);
+      animation: scrollpulse 2s infinite ease-in-out;
+    }
+    @keyframes scrollpulse {
+      0%, 100% { opacity: .4; transform: scaleY(1); }
+      50%       { opacity: 1;  transform: scaleY(.7); }
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       SLIDESHOW
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .hero-slideshow {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.9s cubic-bezier(0.4,0,0.2,1);
+      pointer-events: none;
+    }
+    .hero-slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* slide transition: slide-left */
+    .hero-slide.slide-out-left  { transform: translateX(-100%); transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .hero-slide.slide-in-right  { transform: translateX(100%); }
+    .hero-slide.slide-in-right.active { transform: translateX(0); transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+    /* slide transition: zoom */
+    @keyframes heroZoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+    .hero-slide.zoom-active .slide-bg-img { animation: heroZoom 6s ease-out forwards; }
+    .slide-bg-img {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .slide-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .slide-overlay {
+      position: absolute;
+      inset: 0;
+    }
+    .slide-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+    }
+    /* Dot indicators */
+    .slide-dots {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .slide-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(245,245,245,.35);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .slide-dot.active {
+      background: #fff;
+      transform: scale(1.3);
+    }
+    /* Arrows */
+    .slide-arrows {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .slide-arrow {
+      pointer-events: auto;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(13,13,13,.45);
+      border: 1px solid rgba(245,245,245,.15);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, opacity 0.2s;
+      opacity: 0.7;
+    }
+    .slide-arrow:hover { background: rgba(26,111,255,.55); opacity: 1; transform: scale(1.08); }
+    .slide-arrow:focus-visible { outline: 2px solid #1A6FFF; }
+    .slide-arrow:active { transform: scale(0.95); }
+    @media (max-width: 640px) { .slide-arrows { display: none; } }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       STATS BAR
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #stats {
+      background: linear-gradient(90deg, rgba(26,111,255,.06) 0%, rgba(13,22,40,.8) 50%, rgba(26,111,255,.06) 100%);
+      border-top: 1px solid rgba(196,196,196,.06);
+      border-bottom: 1px solid rgba(196,196,196,.06);
+      padding: 36px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 12px 20px;
+      border-right: 1px solid rgba(196,196,196,.07);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      letter-spacing: 0.04em;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: .72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--silver-lo);
+      margin-top: 6px;
+    }
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       PACKAGES
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #packages { background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(10,22,40,.8) 0%, transparent 70%), var(--black); }
+    .packages-header { text-align: center; margin-bottom: 64px; }
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) { .tier-grid { grid-template-columns: 1fr; } }
+
+    .tier-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(196,196,196,.08);
+      background: rgba(255,255,255,.02);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .tier-card:hover { border-color: rgba(196,196,196,.2); }
+
+    /* tier accents */
+    .tier-card.bronze { --accent: var(--bronze); --accent-lo: var(--bronze-lo); }
+    .tier-card.silver { --accent: var(--silvertier); --accent-lo: var(--silvertier-lo); }
+    .tier-card.gold   { --accent: var(--gold);       --accent-lo: var(--gold-lo); }
+    .tier-card.gold { border-color: rgba(212,175,55,.2); box-shadow: 0 0 60px rgba(212,175,55,.05); }
+
+    .tier-header {
+      padding: 32px 28px 24px;
+      border-bottom: 1px solid rgba(196,196,196,.06);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .tier-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-lo));
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+      overflow: hidden;
+    }
+    .tier-icon svg { width: 22px; height: 22px; display: block; }
+    .tier-name {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .tier-tagline {
+      font-size: .75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--silver-lo);
+      margin-top: 6px;
+    }
+    .tier-toggle {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(196,196,196,.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--silver-lo);
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), border-color 0.2s ease;
+    }
+    .tier-card.open .tier-toggle { transform: rotate(180deg); border-color: var(--accent); color: var(--accent); }
+
+    .tier-sub-plans {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(.4,0,.2,1);
+    }
+    .tier-card.open .tier-sub-plans { max-height: 900px; }
+
+    .sub-plan {
+      padding: 24px 28px;
+      border-bottom: 1px solid rgba(196,196,196,.05);
+      transition: background 0.2s ease;
+    }
+    .sub-plan:last-child { border-bottom: none; }
+    .sub-plan:hover { background: rgba(255,255,255,.03); }
+    .sub-plan-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .sub-freq {
+      font-size: .72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--silver-lo);
+    }
+    .sub-price {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .sub-price span { font-size: .9rem; color: var(--silver-lo); font-family: var(--font-body); font-weight: 400; }
+    .sub-features {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 20px;
+    }
+    .sub-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .83rem;
+      color: var(--silver);
+    }
+    .sub-feature::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .sub-cta {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent), var(--accent-lo));
+      color: var(--black);
+      font-weight: 700;
+      font-size: .78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .sub-cta:hover { opacity: .85; transform: translateY(-1px); }
+    .sub-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .sub-cta:active { transform: translateY(0); }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       BOOKING FORM
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #booking {
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 50%, rgba(26,111,255,.07) 0%, transparent 60%),
+        var(--black);
+    }
+    .booking-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 72px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .booking-wrap { grid-template-columns: 1fr; gap: 40px; } }
+    .booking-info { position: sticky; top: 120px; }
+    .booking-info h2 { margin-bottom: 16px; }
+    .booking-info p { color: var(--silver); font-size: .95rem; line-height: 1.75; margin-bottom: 32px; }
+    .booking-steps-indicator {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .step-ind {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+    }
+    .step-ind + .step-ind { border-top: 1px solid rgba(196,196,196,.06); }
+    .step-num {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(196,196,196,.15);
+      color: var(--silver-lo);
+      flex-shrink: 0;
+      transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+    .step-num.active  { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .step-num.done    { background: rgba(26,111,255,.15); border-color: var(--blue); color: var(--blue); }
+    .step-ind-label   { font-size: .8rem; color: var(--silver-lo); }
+    .step-ind.active-step .step-ind-label { color: var(--white); }
+
+    .booking-form-box {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(196,196,196,.08);
+      border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 40px;
+    }
+    @media (max-width: 600px) { .booking-form-box { padding: 24px 20px; } }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+    .form-step-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .form-step-sub { font-size: .83rem; color: var(--silver-lo); margin-bottom: 28px; }
+    .form-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 500px) { .form-options { grid-template-columns: 1fr; } }
+    .form-option {
+      border: 1px solid rgba(196,196,196,.1);
+      border-radius: var(--radius-sm);
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      position: relative;
+    }
+    .form-option input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+    .form-option-label { font-size: .8rem; letter-spacing: 0.06em; font-weight: 600; }
+    .form-option-sub   { font-size: .7rem; color: var(--silver-lo); margin-top: 4px; }
+    .form-option.selected { border-color: var(--blue); background: rgba(26,111,255,.08); }
+    .form-option-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+    }
+    .form-option.bronze-opt .form-option-dot { background: var(--bronze); }
+    .form-option.silver-opt .form-option-dot { background: var(--silvertier); }
+    .form-option.gold-opt   .form-option-dot { background: var(--gold); }
+
+    .form-freq-options { grid-template-columns: repeat(3, 1fr); }
+    .form-addons { grid-template-columns: repeat(2, 1fr); margin-bottom: 28px; }
+    .addon-option {
+      border: 1px solid rgba(196,196,196,.1);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .addon-option input { position: absolute; opacity: 0; }
+    .addon-check {
+      width: 18px; height: 18px;
+      border: 1px solid rgba(196,196,196,.2);
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .addon-option.selected .addon-check {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+    .addon-option.selected .addon-check::after {
+      content: '';
+      display: block;
+      width: 4px; height: 8px;
+      border-right: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(45deg) translate(-1px, -1px);
+    }
+    .addon-option.selected { border-color: rgba(26,111,255,.4); background: rgba(26,111,255,.05); }
+    .addon-name { font-size: .82rem; font-weight: 600; }
+    .addon-price { font-size: .72rem; color: var(--silver-lo); margin-top: 2px; }
+
+    .form-field-group { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+    .form-field { display: flex; flex-direction: column; gap: 7px; }
+    .form-field label { font-size: .73rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--silver-lo); }
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(196,196,196,.12);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: .9rem;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus { border-color: var(--blue); background: rgba(26,111,255,.05); }
+    .form-field select { appearance: none; cursor: pointer; }
+    .form-field textarea { resize: vertical; min-height: 90px; }
+
+    .form-nav { display: flex; gap: 12px; justify-content: space-between; }
+    .form-nav .btn { flex: 1; justify-content: center; }
+
+    .booking-confirm {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .confirm-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(26,111,255,.1);
+      border: 1px solid rgba(26,111,255,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .confirm-icon svg { width: 32px; height: 32px; color: var(--blue); }
+    .confirm-title { font-family: var(--font-display); font-size: 2rem; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .confirm-sub { color: var(--silver); font-size: .93rem; line-height: 1.7; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       GALLERY
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #gallery { background: var(--navy); }
+    .gallery-header { text-align: center; margin-bottom: 56px; }
+    .gallery-grid {
+      columns: 3;
+      column-gap: 16px;
+      margin-bottom: 56px;
+    }
+    @media (max-width: 768px) { .gallery-grid { columns: 2; } }
+    @media (max-width: 480px) { .gallery-grid { columns: 1; } }
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      position: relative;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      background: #141E2E;
+      border: 1px solid rgba(196,196,196,.08);
+    }
+    .gallery-item img { width: 100%; display: block; transition: transform 0.5s ease; }
+    .gallery-item:hover img { transform: scale(1.04); }
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(13,13,13,.85) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay-text { font-size: .78rem; color: var(--silver); letter-spacing: 0.06em; }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 900px) { .testimonials-grid { grid-template-columns: 1fr; } }
+    .testimonial-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(196,196,196,.07);
+      background: rgba(255,255,255,.02);
+    }
+    .testimonial-thumb {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: var(--black);
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .testimonial-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .testimonial-thumb:hover img { transform: scale(1.05); }
+    .play-btn {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-btn-circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: rgba(26,111,255,.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), background 0.2s ease;
+    }
+    .testimonial-thumb:hover .play-btn-circle { transform: scale(1.1); background: var(--blue); }
+    .testimonial-info { padding: 16px; }
+    .testimonial-name { font-weight: 600; font-size: .88rem; }
+    .testimonial-vehicle { font-size: .75rem; color: var(--silver-lo); margin-top: 3px; }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(13,13,13,.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      align-items: center;
+      justify-content: center;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: var(--radius);
+      box-shadow: 0 32px 80px rgba(0,0,0,.8);
+    }
+    #lightbox-close {
+      position: absolute;
+      top: 24px; right: 24px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(196,196,196,.2);
+      background: rgba(13,13,13,.6);
+      color: var(--silver);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    #lightbox-close:hover { border-color: var(--silver); color: var(--white); }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       SUBSCRIPTIONS
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #subscriptions {
+      background:
+        radial-gradient(ellipse 70% 50% at 80% 30%, rgba(26,111,255,.07) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 60% at 10% 70%, rgba(26,111,255,.04) 0%, transparent 60%),
+        var(--navy);
+    }
+    .subs-header { text-align: center; margin-bottom: 60px; }
+    .subs-header p { color: var(--silver-lo); font-size: .93rem; margin-top: 14px; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+    .subs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) { .subs-grid { grid-template-columns: 1fr; max-width: 480px; margin-inline: auto; } }
+    .sub-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(196,196,196,.08);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      transition: border-color 0.3s ease, transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease;
+    }
+    .sub-card:hover { border-color: rgba(26,111,255,.35); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(26,111,255,.12); }
+    .sub-card.popular {
+      background: rgba(26,111,255,.06);
+      border-color: rgba(26,111,255,.4);
+      box-shadow: 0 0 0 1px rgba(26,111,255,.15), 0 8px 40px rgba(26,111,255,.15);
+    }
+    .sub-card.popular:hover { transform: translateY(-6px); box-shadow: 0 0 0 1px rgba(26,111,255,.25), 0 20px 56px rgba(26,111,255,.22); }
+    .sub-popular-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--blue);
+      color: var(--white);
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .sub-card-name {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 0.1em;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .sub-card-desc { color: var(--silver-lo); font-size: .83rem; line-height: 1.6; margin-bottom: 24px; min-height: 40px; }
+    .sub-card-price {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      margin-bottom: 28px;
+    }
+    .sub-card-price .currency { font-size: 1.3rem; font-weight: 600; color: var(--silver); align-self: flex-start; padding-top: 6px; }
+    .sub-card-price .amount { font-family: var(--font-display); font-size: 3.8rem; line-height: 1; color: var(--white); }
+    .sub-card-price .period { font-size: .78rem; color: var(--silver-lo); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+    .sub-card-features { list-style: none; margin-bottom: 32px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .sub-card-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .87rem;
+      color: var(--silver);
+      line-height: 1.5;
+    }
+    .sub-card-features li svg { flex-shrink: 0; margin-top: 2px; color: var(--blue); }
+    .sub-cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 24px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: .85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid rgba(26,111,255,.4);
+      background: transparent;
+      color: var(--blue);
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .sub-cta-btn:hover { background: var(--blue); color: var(--white); border-color: var(--blue); transform: translateY(-1px); }
+    .sub-cta-btn:active { transform: translateY(0); }
+    .sub-cta-btn.popular-btn { background: var(--blue); color: var(--white); border-color: var(--blue); box-shadow: 0 4px 20px rgba(26,111,255,.4); }
+    .sub-cta-btn.popular-btn:hover { background: #2a80ff; box-shadow: 0 6px 28px rgba(26,111,255,.55); }
+    .subs-footer-note { text-align: center; margin-top: 40px; color: var(--silver-lo); font-size: .78rem; letter-spacing: 0.04em; }
+    .subs-footer-note a { color: var(--blue); }
+
+    /* â”€â”€ Checkout Modal â”€â”€ */
+    #checkout-modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #checkout-modal-bg.open { display: flex; }
+    .checkout-modal {
+      background: var(--navy);
+      border: 1px solid rgba(196,196,196,.1);
+      border-radius: var(--radius);
+      padding: 36px;
+      width: min(520px, 94vw);
+      max-height: 92vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .checkout-modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(196,196,196,.15);
+      background: transparent;
+      color: var(--silver-lo);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .checkout-modal-close:hover { border-color: var(--silver); color: var(--white); }
+    .checkout-pkg-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(26,111,255,.1); border: 1px solid rgba(26,111,255,.25);
+      border-radius: 100px; padding: 5px 14px; font-size: .75rem;
+      color: var(--blue); font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .checkout-modal h3 {
+      font-family: var(--font-display);
+      font-size: 1.8rem; letter-spacing: 0.08em;
+      color: var(--white); margin-bottom: 6px;
+    }
+    .checkout-modal p.sub { color: var(--silver-lo); font-size: .88rem; margin-bottom: 28px; line-height: 1.6; }
+    .checkout-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .checkout-field label { font-size: .72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--silver-lo); }
+    .checkout-field input {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(196,196,196,.15);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: .9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+    .checkout-field input:focus { border-color: var(--blue); }
+    .checkout-price-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(196,196,196,.08);
+      border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 24px;
+    }
+    .checkout-price-label { font-size: .82rem; color: var(--silver-lo); }
+    .checkout-price-val { font-family: var(--font-display); font-size: 1.5rem; color: var(--white); }
+    .checkout-submit {
+      width: 100%; padding: 15px; border: none;
+      background: var(--blue); color: var(--white);
+      border-radius: var(--radius-sm); font-family: var(--font-body);
+      font-weight: 600; font-size: .88rem; letter-spacing: 0.1em;
+      text-transform: uppercase; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(26,111,255,.35);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .checkout-submit:hover { background: #2a80ff; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(26,111,255,.5); }
+    .checkout-submit:active { transform: translateY(0); }
+    .checkout-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .checkout-security-note {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-top: 14px; font-size: .72rem;
+      color: var(--silver-lo); letter-spacing: 0.04em;
+    }
+    .checkout-success {
+      text-align: center; padding: 20px 0;
+    }
+    .checkout-success-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .checkout-success-icon svg { width: 32px; height: 32px; color: #22C55E; }
+    .checkout-not-configured {
+      text-align: center; padding: 10px 0;
+    }
+    .checkout-not-configured svg { color: var(--blue); width: 40px; height: 40px; margin: 0 auto 16px; display: block; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       CONTACT
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #contact { background: var(--black); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 72px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
+    .contact-info h2 { margin-bottom: 20px; }
+    .contact-info p { color: var(--silver); font-size: .93rem; line-height: 1.75; margin-bottom: 36px; }
+    .contact-detail {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .contact-detail-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: rgba(26,111,255,.08);
+      border: 1px solid rgba(26,111,255,.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--blue);
+    }
+    .contact-detail-label { font-size: .7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--silver-lo); }
+    .contact-detail-value { font-size: .9rem; color: var(--white); margin-top: 3px; }
+    .map-placeholder {
+      width: 100%;
+      height: 180px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(196,196,196,.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--silver-lo);
+      font-size: .8rem;
+      letter-spacing: 0.08em;
+      margin-top: 32px;
+    }
+
+    .contact-form {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(196,196,196,.08);
+      border-radius: var(--radius);
+      padding: 40px;
+    }
+    @media (max-width: 600px) { .contact-form { padding: 24px 20px; } }
+    .contact-form h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+    .contact-submit { margin-top: 24px; width: 100%; justify-content: center; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       FOOTER
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    footer {
+      background: #080808;
+      border-top: 1px solid rgba(196,196,196,.06);
+      padding: 64px 0 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 56px;
+    }
+    @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 500px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-brand .nav-logo { margin-bottom: 16px; }
+    .footer-brand p { font-size: .83rem; color: var(--silver-lo); line-height: 1.7; max-width: 240px; margin-bottom: 24px; }
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+    }
+    .footer-socials a {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(196,196,196,.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--silver-lo);
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+    .footer-socials a:hover { border-color: var(--blue); color: var(--blue); background: rgba(26,111,255,.06); }
+    .footer-col h4 {
+      font-size: .72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--silver-lo);
+      margin-bottom: 18px;
+    }
+    .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { font-size: .85rem; color: var(--silver-lo); transition: color 0.2s ease; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid rgba(196,196,196,.06);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-copy { font-size: .78rem; color: var(--silver-lo); }
+    .footer-legal {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-legal a { font-size: .78rem; color: var(--silver-lo); }
+    .footer-legal a:hover { color: var(--white); }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       COOKIE CONSENT BANNER
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    #cookie-banner {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      z-index: 9000;
+      width: min(680px, calc(100vw - 32px));
+      background: rgba(14,14,14,.97);
+      border: 1px solid rgba(196,196,196,.15);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(26,111,255,.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), opacity 0.3s ease;
+      opacity: 0;
+    }
+    #cookie-banner.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .cookie-banner-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+    .cookie-banner-icon { flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; }
+    .cookie-banner-title { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: .08em; color: var(--white); margin-bottom: 6px; }
+    .cookie-banner-text { font-size: .83rem; color: var(--silver-lo); line-height: 1.6; }
+    .cookie-banner-text a { color: var(--blue); }
+    .cookie-banner-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .cookie-btn {
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s, transform 0.15s cubic-bezier(.34,1.56,.64,1);
+    }
+    .cookie-btn:hover { opacity: .85; transform: translateY(-1px); }
+    .cookie-btn:active { transform: translateY(0); }
+    .cookie-btn-accept { background: var(--blue); color: #fff; box-shadow: 0 4px 16px rgba(26,111,255,.35); }
+    .cookie-btn-reject { background: rgba(255,255,255,.06); color: var(--silver); border: 1px solid rgba(196,196,196,.15); }
+    .cookie-btn-manage { background: transparent; color: var(--silver-lo); font-size: .75rem; padding: 10px 14px; }
+    .cookie-btn-manage:hover { color: var(--white); }
+
+    /* Manage Preferences modal */
+    #cookie-modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      z-index: 9100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #cookie-modal-bg.open { display: flex; }
+    .cookie-modal {
+      background: #111;
+      border: 1px solid rgba(196,196,196,.12);
+      border-radius: var(--radius);
+      padding: 32px;
+      width: min(520px, 94vw);
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    .cookie-modal-title { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: .08em; color: var(--white); margin-bottom: 6px; }
+    .cookie-modal-sub { font-size: .83rem; color: var(--silver-lo); margin-bottom: 28px; line-height: 1.6; }
+    .cookie-cat {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(196,196,196,.07);
+    }
+    .cookie-cat:last-of-type { border-bottom: none; }
+    .cookie-cat-info { flex: 1; }
+    .cookie-cat-name { font-size: .9rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+    .cookie-cat-desc { font-size: .79rem; color: var(--silver-lo); line-height: 1.55; }
+    .cookie-cat-badge { font-size: .65rem; color: var(--silver-lo); letter-spacing: .12em; text-transform: uppercase; margin-top: 5px; }
+    /* toggle switch */
+    .ck-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; margin-top: 2px; }
+    .ck-toggle input { opacity: 0; width: 0; height: 0; }
+    .ck-slider {
+      position: absolute; inset: 0;
+      border-radius: 100px;
+      background: rgba(196,196,196,.15);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .ck-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      left: 3px; top: 3px;
+      transition: transform 0.2s;
+    }
+    .ck-toggle input:checked + .ck-slider { background: var(--blue); }
+    .ck-toggle input:checked + .ck-slider::before { transform: translateX(20px); }
+    .ck-toggle input:disabled + .ck-slider { opacity: .5; cursor: not-allowed; }
+    .cookie-modal-footer { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• COOKIE CONSENT BANNER â•â•â•â•â•â•â•â•â•â•â• -->
+  <div id="cookie-banner" role="dialog" aria-label="Cookie consent" aria-live="polite">
+    <div class="cookie-banner-top">
+      <div class="cookie-banner-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#C4C4C4"><circle cx="12" cy="12" r="10"/><path d="M8.5 8.5v.01M12 12v.01M7 14v.01M15 10v.01M15 16v.01"/></svg></div>
+      <div>
+        <div class="cookie-banner-title">YOUR PRIVACY</div>
+        <p class="cookie-banner-text">
+          We use cookies to keep the site running and, with your consent, to understand how you use it. Only essential cookies are active until you choose. Read our <a href="/privacy-policy">Privacy Policy</a> for details.
+        </p>
+      </div>
+    </div>
+    <div class="cookie-banner-btns">
+      <button class="cookie-btn cookie-btn-accept" onclick="cookieAcceptAll()">Accept All</button>
+      <button class="cookie-btn cookie-btn-reject" onclick="cookieRejectAll()">Reject All</button>
+      <button class="cookie-btn cookie-btn-manage" onclick="openCookieSettings()">Manage Preferences</button>
+    </div>
+  </div>
+
+  <!-- Cookie Preferences Modal -->
+  <div id="cookie-modal-bg" role="dialog" aria-modal="true" aria-label="Cookie preferences">
+    <div class="cookie-modal">
+      <div class="cookie-modal-title">COOKIE PREFERENCES</div>
+      <p class="cookie-modal-sub">Choose which cookies you allow. Essential cookies cannot be disabled as they are required for the site to function. Your choice is saved for 12 months.</p>
+
+      <div class="cookie-cat">
+        <div class="cookie-cat-info">
+          <div class="cookie-cat-name">Essential</div>
+          <div class="cookie-cat-desc">Login sessions, security tokens, and CSRF protection. Required for the site to work.</div>
+          <div class="cookie-cat-badge">Always active</div>
+        </div>
+        <label class="ck-toggle"><input type="checkbox" id="ck-essential" checked disabled /><span class="ck-slider"></span></label>
+      </div>
+
+      <div class="cookie-cat">
+        <div class="cookie-cat-info">
+          <div class="cookie-cat-name">Functional</div>
+          <div class="cookie-cat-desc">Remembers your preferences and settings to improve your experience.</div>
+        </div>
+        <label class="ck-toggle"><input type="checkbox" id="ck-functional" /><span class="ck-slider"></span></label>
+      </div>
+
+      <div class="cookie-cat">
+        <div class="cookie-cat-info">
+          <div class="cookie-cat-name">Analytics</div>
+          <div class="cookie-cat-desc">Google Analytics &mdash; helps us understand which pages are visited and how people use the site. IP addresses are anonymised.</div>
+        </div>
+        <label class="ck-toggle"><input type="checkbox" id="ck-analytics" /><span class="ck-slider"></span></label>
+      </div>
+
+      <div class="cookie-cat">
+        <div class="cookie-cat-info">
+          <div class="cookie-cat-name">Marketing</div>
+          <div class="cookie-cat-desc">Advertising and retargeting pixels used to show relevant adverts on other platforms.</div>
+        </div>
+        <label class="ck-toggle"><input type="checkbox" id="ck-marketing" /><span class="ck-slider"></span></label>
+      </div>
+
+      <div class="cookie-modal-footer">
+        <button class="cookie-btn cookie-btn-accept" onclick="cookieSavePreferences()">Save Preferences</button>
+        <button class="cookie-btn cookie-btn-reject" onclick="closeCookieModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• NAV â•â•â•â•â•â•â•â•â•â•â• -->
+  <nav id="navbar">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo" aria-label="Clean Torque Detailing">
+          <img src="Brand_Assets/logo_cropped.png" alt="Clean Torque Detailing" class="nav-logo-img" />
+        </a>
+        <ul class="nav-links">
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#packages">Packages</a></li>
+          <li><a href="#subscriptions">Subscribe</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#booking">Book Now</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="nav-socials">
+          <a href="#" data-social="instagram" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" data-social="facebook" aria-label="Facebook">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="#" data-social="tiktok" aria-label="TikTok">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.19 8.19 0 004.79 1.53V7.1a4.85 4.85 0 01-1.02-.41z"/></svg>
+          </a>
+          <a href="#" data-social="twitter" aria-label="X / Twitter">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+          </a>
+        </div>
+        <a href="#booking" class="btn btn-silver nav-cta" id="nav-cta-btn">Book Now</a>
+        <button class="nav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="nav-mobile" id="mobileMenu" role="dialog" aria-label="Navigation">
+    <a href="#hero"          onclick="closeMobile()">Home</a>
+    <a href="#packages"      onclick="closeMobile()">Packages</a>
+    <a href="#subscriptions" onclick="closeMobile()">Subscribe</a>
+    <a href="#gallery"       onclick="closeMobile()">Gallery</a>
+    <a href="#booking"       onclick="closeMobile()">Book Now</a>
+    <a href="#contact"       onclick="closeMobile()">Contact</a>
+    <a href="#booking" class="btn btn-silver" onclick="closeMobile()">Book a Session</a>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• HERO â•â•â•â•â•â•â•â•â•â•â• -->
+  <section id="hero">
+    <!-- Dynamic slideshow (injected by JS when slides exist) -->
+    <div id="hero-slideshow" class="hero-slideshow" style="display:none"></div>
+    <!-- Slideshow controls (shown when slideshow is active) -->
+    <div class="slide-arrows" id="slide-arrows" style="display:none">
+      <button class="slide-arrow" id="slide-prev" aria-label="Previous slide">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="slide-arrow" id="slide-next" aria-label="Next slide">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="slide-dots" id="slide-dots" style="display:none"></div>
+    <!-- Static hero fallback (shown when no slides or slideshow disabled) -->
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="container" id="hero-static-content">
+      <div class="hero-content">
+        <div class="hero-tag fade-in" data-hero="tag">Vehicle Appearance Specialists</div>
+        <h1 class="hero-headline fade-in" data-hero="headline">LUXURY<br>DETAILING,<br><em>TAILORED</em><br>TO YOU</h1>
+        <p class="hero-sub fade-in" data-hero="sub">Premium monthly wash plans to keep your vehicle showroom-ready. Trusted by car enthusiasts across the UK.</p>
+        <div class="hero-ctas fade-in">
+          <a href="#packages" class="btn btn-primary" data-hero="cta1">View Packages</a>
+          <a href="#booking"  class="btn btn-outline" data-hero="cta2">Book a Session</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">
+      <div class="hero-scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• STATS â•â•â•â•â•â•â•â•â•â•â• -->
+  <div id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item fade-in">
+          <div class="stat-num" id="stat-num-1">500+</div>
+          <div class="stat-label" id="stat-label-1">Vehicles Detailed</div>
+        </div>
+        <div class="stat-item fade-in">
+          <div class="stat-num" id="stat-num-2">4.9â˜…</div>
+          <div class="stat-label" id="stat-label-2">Average Rating</div>
+        </div>
+        <div class="stat-item fade-in">
+          <div class="stat-num" id="stat-num-3">3</div>
+          <div class="stat-label" id="stat-label-3">Subscription Tiers</div>
+        </div>
+        <div class="stat-item fade-in">
+          <div class="stat-num" id="stat-num-4">24h</div>
+          <div class="stat-label" id="stat-label-4">Booking Response</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• PACKAGES â•â•â•â•â•â•â•â•â•â•â• -->
+  <section id="packages" class="section">
+    <div class="container">
+      <div class="packages-header fade-in">
+        <div class="section-label" id="packages-title-el">OUR PACKAGES</div>
+        <div class="section-sub" id="packages-sub-el">Choose your tier &mdash; select a plan inside to see pricing</div>
+      </div>
+      <div class="tier-grid">
+
+        <!-- BRONZE -->
+        <div class="tier-card bronze fade-in" id="tier-bronze">
+          <div class="tier-header" onclick="toggleTier('tier-bronze')" role="button" tabindex="0" aria-expanded="false">
+            <div>
+              <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#CD7F32" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#CD7F32" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">3</text></svg></div>
+              <div class="tier-name" style="margin-top:12px">BRONZE</div>
+              <div class="tier-tagline">Essential Care</div>
+            </div>
+            <div class="tier-toggle" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="tier-sub-plans">
+            <!-- 3/month -->
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">3 Washes / Month</div>
+                <div class="sub-price" data-tier="bronze" data-freq="3">&pound;39<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="bronze" data-freq="3">
+                <li class="sub-feature">Exterior hand wash &amp; rinse</li>
+                <li class="sub-feature">Wheel clean &amp; tyre dressing</li>
+                <li class="sub-feature">Window polish (exterior)</li>
+                <li class="sub-feature">Air freshener treatment</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Bronze','3')">Choose Plan</button>
+            </div>
+            <!-- 6/month -->
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">6 Washes / Month</div>
+                <div class="sub-price" data-tier="bronze" data-freq="6">&pound;69<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="bronze" data-freq="6">
+                <li class="sub-feature">Everything in 3-wash plan</li>
+                <li class="sub-feature">Interior vacuum &amp; wipe-down</li>
+                <li class="sub-feature">Tyre shine application</li>
+                <li class="sub-feature">Door shuts &amp; sill clean</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Bronze','6')">Choose Plan</button>
+            </div>
+            <!-- 12/month -->
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">12 Washes / Month</div>
+                <div class="sub-price" data-tier="bronze" data-freq="12">&pound;119<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="bronze" data-freq="12">
+                <li class="sub-feature">Everything in 6-wash plan</li>
+                <li class="sub-feature">Full interior deep clean</li>
+                <li class="sub-feature">Dashboard &amp; trim dressing</li>
+                <li class="sub-feature">Priority scheduling</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Bronze','12')">Choose Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SILVER -->
+        <div class="tier-card silver fade-in" id="tier-silver" style="transition-delay:.1s">
+          <div class="tier-header" onclick="toggleTier('tier-silver')" role="button" tabindex="0" aria-expanded="false">
+            <div>
+              <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#A8A9AD" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#A8A9AD" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">2</text></svg></div>
+              <div class="tier-name" style="margin-top:12px">SILVER</div>
+              <div class="tier-tagline">Enhanced Protection</div>
+            </div>
+            <div class="tier-toggle" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="tier-sub-plans">
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">3 Washes / Month</div>
+                <div class="sub-price" data-tier="silver" data-freq="3">&pound;59<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="silver" data-freq="3">
+                <li class="sub-feature">All Bronze features</li>
+                <li class="sub-feature">Clay bar decontamination</li>
+                <li class="sub-feature">Paint sealant application</li>
+                <li class="sub-feature">Leather conditioning</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Silver','3')">Choose Plan</button>
+            </div>
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">6 Washes / Month</div>
+                <div class="sub-price" data-tier="silver" data-freq="6">&pound;99<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="silver" data-freq="6">
+                <li class="sub-feature">All Bronze 6-wash features</li>
+                <li class="sub-feature">Machine polish (light swirls)</li>
+                <li class="sub-feature">Alloy wheel refurbishment</li>
+                <li class="sub-feature">UV protectant on plastics</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Silver','6')">Choose Plan</button>
+            </div>
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">12 Washes / Month</div>
+                <div class="sub-price" data-tier="silver" data-freq="12">&pound;169<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="silver" data-freq="12">
+                <li class="sub-feature">All Silver 6-wash features</li>
+                <li class="sub-feature">Ceramic spray top-up</li>
+                <li class="sub-feature">Headlight restoration</li>
+                <li class="sub-feature">Dedicated detailer assigned</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Silver','12')">Choose Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- GOLD -->
+        <div class="tier-card gold fade-in" id="tier-gold" style="transition-delay:.2s">
+          <div class="tier-header" onclick="toggleTier('tier-gold')" role="button" tabindex="0" aria-expanded="false">
+            <div>
+              <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#D4AF37" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">1</text></svg></div>
+              <div class="tier-name" style="margin-top:12px">GOLD</div>
+              <div class="tier-tagline">Ultimate Luxury</div>
+            </div>
+            <div class="tier-toggle" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="tier-sub-plans">
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">3 Washes / Month</div>
+                <div class="sub-price" data-tier="gold" data-freq="3">&pound;89<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="gold" data-freq="3">
+                <li class="sub-feature">All Silver features</li>
+                <li class="sub-feature">Full ceramic coat top-up</li>
+                <li class="sub-feature">Paint correction included</li>
+                <li class="sub-feature">Engine bay detail</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Gold','3')">Choose Plan</button>
+            </div>
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">6 Washes / Month</div>
+                <div class="sub-price" data-tier="gold" data-freq="6">&pound;149<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="gold" data-freq="6">
+                <li class="sub-feature">All Gold 3-wash features</li>
+                <li class="sub-feature">Full interior detail &amp; shampoo</li>
+                <li class="sub-feature">Odour elimination treatment</li>
+                <li class="sub-feature">Concierge pickup &amp; return</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Gold','6')">Choose Plan</button>
+            </div>
+            <div class="sub-plan">
+              <div class="sub-plan-top">
+                <div class="sub-freq">12 Washes / Month</div>
+                <div class="sub-price" data-tier="gold" data-freq="12">&pound;239<span>/mo</span></div>
+              </div>
+              <ul class="sub-features" data-tier="gold" data-freq="12">
+                <li class="sub-feature">All Gold 6-wash features</li>
+                <li class="sub-feature">Graphene ceramic coating</li>
+                <li class="sub-feature">Monthly inspection report</li>
+                <li class="sub-feature">VIP priority at all times</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Gold','12')">Choose Plan</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• BOOKING â•â•â•â•â•â•â•â•â•â•â• -->
+  <section id="booking" class="section">
+    <div class="container">
+      <div class="booking-wrap">
+        <!-- Left info -->
+        <div class="booking-info fade-in">
+          <h2 class="section-label" id="booking-title-el">BUILD YOUR PLAN</h2>
+          <p id="booking-sub-el">Select your package, choose your frequency, add any extras, and tell us about your vehicle. We'll confirm within 24 hours.</p>
+          <div class="booking-steps-indicator">
+            <div class="step-ind active-step" data-step="1">
+              <div class="step-num active">1</div>
+              <div class="step-ind-label">Select Package</div>
+            </div>
+            <div class="step-ind" data-step="2">
+              <div class="step-num">2</div>
+              <div class="step-ind-label">Choose Frequency</div>
+            </div>
+            <div class="step-ind" data-step="3">
+              <div class="step-num">3</div>
+              <div class="step-ind-label">Add-ons</div>
+            </div>
+            <div class="step-ind" data-step="4">
+              <div class="step-num">4</div>
+              <div class="step-ind-label">Your Details</div>
+            </div>
+            <div class="step-ind" data-step="5">
+              <div class="step-num">5</div>
+              <div class="step-ind-label">Confirmation</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right form -->
+        <div class="booking-form-box fade-in">
+
+          <!-- Step 1: Package -->
+          <div class="form-step active" id="step-1">
+            <div class="form-step-title">SELECT PACKAGE</div>
+            <div class="form-step-sub">Which tier suits your vehicle?</div>
+            <div class="form-options" id="pkg-options">
+              <label class="form-option bronze-opt" data-value="Bronze">
+                <input type="radio" name="package" value="Bronze" />
+                <div class="form-option-dot"></div>
+                <div class="form-option-label">BRONZE</div>
+                <div class="form-option-sub">Essential Care</div>
+              </label>
+              <label class="form-option silver-opt" data-value="Silver">
+                <input type="radio" name="package" value="Silver" />
+                <div class="form-option-dot"></div>
+                <div class="form-option-label">SILVER</div>
+                <div class="form-option-sub">Enhanced Protection</div>
+              </label>
+              <label class="form-option gold-opt" data-value="Gold">
+                <input type="radio" name="package" value="Gold" />
+                <div class="form-option-dot"></div>
+                <div class="form-option-label">GOLD</div>
+                <div class="form-option-sub">Ultimate Luxury</div>
+              </label>
+            </div>
+            <div class="form-nav">
+              <button class="btn btn-primary" onclick="nextStep(2)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Frequency -->
+          <div class="form-step" id="step-2">
+            <div class="form-step-title">CHOOSE FREQUENCY</div>
+            <div class="form-step-sub">How often would you like a wash?</div>
+            <div class="form-options form-freq-options" id="freq-options">
+              <label class="form-option" data-value="3">
+                <input type="radio" name="frequency" value="3" />
+                <div class="form-option-label">3 / MONTH</div>
+                <div class="form-option-sub">Entry level</div>
+              </label>
+              <label class="form-option" data-value="6">
+                <input type="radio" name="frequency" value="6" />
+                <div class="form-option-label">6 / MONTH</div>
+                <div class="form-option-sub">Most popular</div>
+              </label>
+              <label class="form-option" data-value="12">
+                <input type="radio" name="frequency" value="12" />
+                <div class="form-option-label">12 / MONTH</div>
+                <div class="form-option-sub">Premium</div>
+              </label>
+            </div>
+            <div class="form-nav">
+              <button class="btn btn-outline" onclick="prevStep(1)">Back</button>
+              <button class="btn btn-primary" onclick="nextStep(3)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Add-ons -->
+          <div class="form-step" id="step-3">
+            <div class="form-step-title">ADD-ONS</div>
+            <div class="form-step-sub">Optional extras to enhance your detail</div>
+            <div class="form-options form-addons" id="addon-options">
+              <label class="addon-option" data-value="engine">
+                <input type="checkbox" name="addons" value="engine" />
+                <div class="addon-check"></div>
+                <div>
+                  <div class="addon-name">Engine Bay Clean</div>
+                  <div class="addon-price">+&pound;35/session</div>
+                </div>
+              </label>
+              <label class="addon-option" data-value="odour">
+                <input type="checkbox" name="addons" value="odour" />
+                <div class="addon-check"></div>
+                <div>
+                  <div class="addon-name">Odour Treatment</div>
+                  <div class="addon-price">+&pound;20/session</div>
+                </div>
+              </label>
+              <label class="addon-option" data-value="paint">
+                <input type="checkbox" name="addons" value="paint" />
+                <div class="addon-check"></div>
+                <div>
+                  <div class="addon-name">Paint Correction</div>
+                  <div class="addon-price">+&pound;80/session</div>
+                </div>
+              </label>
+              <label class="addon-option" data-value="ceramic">
+                <input type="checkbox" name="addons" value="ceramic" />
+                <div class="addon-check"></div>
+                <div>
+                  <div class="addon-name">Ceramic Top-Up</div>
+                  <div class="addon-price">+&pound;45/session</div>
+                </div>
+              </label>
+            </div>
+            <div class="form-nav">
+              <button class="btn btn-outline" onclick="prevStep(2)">Back</button>
+              <button class="btn btn-primary" onclick="nextStep(4)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 4: Personal details -->
+          <div class="form-step" id="step-4">
+            <div class="form-step-title">YOUR DETAILS</div>
+            <div class="form-step-sub">We'll use this to confirm your booking</div>
+            <div class="form-field-group">
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="b-name">Full Name</label>
+                  <input type="text" id="b-name" placeholder="John Smith" />
+                </div>
+                <div class="form-field">
+                  <label for="b-phone">Phone</label>
+                  <input type="tel" id="b-phone" placeholder="07500 000000" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="b-email">Email Address</label>
+                <input type="email" id="b-email" placeholder="john@example.com" />
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="b-make">Vehicle Make</label>
+                  <input type="text" id="b-make" placeholder="BMW, Audi, Tesla&hellip;" />
+                </div>
+                <div class="form-field">
+                  <label for="b-model">Vehicle Model</label>
+                  <input type="text" id="b-model" placeholder="M3, RS6, Model S&hellip;" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="b-date">Preferred Date &amp; Time</label>
+                <input type="datetime-local" id="b-date" />
+              </div>
+            </div>
+            <label class="booking-consent-row" style="display:flex;align-items:flex-start;gap:10px;margin:4px 0 20px;cursor:pointer">
+              <input type="checkbox" id="b-marketing" style="margin-top:3px;width:auto;flex-shrink:0;accent-color:var(--blue)" />
+              <span style="font-size:.83rem;color:var(--silver-lo);line-height:1.55">I would like to receive offers, news and updates by email from Clean Torque Detailing. You can unsubscribe at any time.</span>
+            </label>
+            <p style="font-size:.75rem;color:var(--silver-lo);margin-bottom:20px">By submitting this form you confirm you have read our <a href="/privacy-policy" style="color:var(--blue)">Privacy Policy</a> and <a href="/terms" style="color:var(--blue)">Terms &amp; Conditions</a>.</p>
+            <div class="form-nav">
+              <button class="btn btn-outline" onclick="prevStep(3)">Back</button>
+              <button class="btn btn-primary" onclick="submitBooking()">Submit Booking</button>
+            </div>
+          </div>
+
+          <!-- Step 5: Confirmation -->
+          <div class="form-step" id="step-5">
+            <div class="booking-confirm">
+              <div class="confirm-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="confirm-title">BOOKING RECEIVED</div>
+              <p class="confirm-sub">Your booking request has been submitted. We'll review the details and confirm within 24 hours via email or phone.</p>
+              <br>
+              <a href="#packages" class="btn btn-outline" onclick="resetBooking()">Back to Packages</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• GALLERY â•â•â•â•â•â•â•â•â•â•â• -->
+  <section id="gallery" class="section">
+    <div class="container">
+      <div class="gallery-header fade-in">
+        <div class="section-label" id="gallery-title-el">THE RESULTS SPEAK</div>
+        <div class="section-sub" id="gallery-sub-el">Before &amp; after &mdash; real vehicles, real transformations</div>
+      </div>
+
+      <div class="gallery-grid fade-in">
+        <div class="gallery-item" onclick="openLightbox('https://placehold.co/800x600/141E2E/C4C4C4?text=After+Detail')">
+          <img src="https://placehold.co/600x700/141E2E/C4C4C4?text=After+Detail" alt="Detailed vehicle" loading="lazy" />
+          <div class="gallery-overlay"><div class="gallery-overlay-text">Click to enlarge</div></div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('https://placehold.co/800x550/1A2840/C4C4C4?text=Paint+Correction')">
+          <img src="https://placehold.co/600x400/1A2840/C4C4C4?text=Paint+Correction" alt="Paint correction" loading="lazy" />
+          <div class="gallery-overlay"><div class="gallery-overlay-text">Click to enlarge</div></div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('https://placehold.co/800x600/141E2E/1A6FFF?text=Interior+Detail')">
+          <img src="https://placehold.co/600x500/141E2E/1A6FFF?text=Interior+Detail" alt="Interior detail" loading="lazy" />
+          <div class="gallery-overlay"><div class="gallery-overlay-text">Click to enlarge</div></div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('https://placehold.co/800x500/1A2840/D4AF37?text=Ceramic+Coat')">
+          <img src="https://placehold.co/600x360/1A2840/D4AF37?text=Ceramic+Coat" alt="Ceramic coating" loading="lazy" />
+          <div class="gallery-overlay"><div class="gallery-overlay-text">Click to enlarge</div></div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('https://placehold.co/800x700/141E2E/C4C4C4?text=Wheel+Detail')">
+          <img src="https://placehold.co/600x520/141E2E/C4C4C4?text=Wheel+Detail" alt="Wheel detailing" loading="lazy" />
+          <div class="gallery-overlay"><div class="gallery-overlay-text">Click to enlarge</div></div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox('https://placehold.co/800x600/1A2840/C4C4C4?text=Engine+Bay')">
+          <img src="https://placehold.co/600x440/1A2840/C4C4C4?text=Engine+Bay" alt="Engine bay clean" loading="lazy" />
+          <div class="gallery-overlay"><div class="gallery-overlay-text">Click to enlarge</div></div>
+        </div>
+      </div>
+
+      <div class="testimonials-grid fade-in">
+        <div class="testimonial-card">
+          <div class="testimonial-thumb">
+            <img src="https://placehold.co/480x270/0D0D0D/C4C4C4?text=Video+Testimonial" alt="Testimonial" loading="lazy" />
+            <div class="play-btn">
+              <div class="play-btn-circle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-info">
+            <div class="testimonial-name">James T.</div>
+            <div class="testimonial-vehicle">BMW M5 &mdash; Gold Plan</div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-thumb">
+            <img src="https://placehold.co/480x270/0A1628/C4C4C4?text=Video+Testimonial" alt="Testimonial" loading="lazy" />
+            <div class="play-btn">
+              <div class="play-btn-circle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-info">
+            <div class="testimonial-name">Sarah K.</div>
+            <div class="testimonial-vehicle">Porsche 911 &mdash; Silver Plan</div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-thumb">
+            <img src="https://placehold.co/480x270/0D0D0D/1A6FFF?text=Video+Testimonial" alt="Testimonial" loading="lazy" />
+            <div class="play-btn">
+              <div class="play-btn-circle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-info">
+            <div class="testimonial-name">Marcus O.</div>
+            <div class="testimonial-vehicle">Audi RS6 &mdash; Gold Plan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Gallery image" />
+    <div id="lightbox-caption" style="position:absolute;bottom:60px;left:50%;transform:translateX(-50%);color:rgba(245,245,245,.8);font-size:.82rem;background:rgba(0,0,0,.5);padding:4px 14px;border-radius:20px;max-width:80%;text-align:center;display:none"></div>
+    <button id="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+    <button id="lightbox-prev" onclick="event.stopPropagation();lightboxNav(-1)" aria-label="Previous" style="position:absolute;left:20px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(13,13,13,.6);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s">&#8249;</button>
+    <button id="lightbox-next" onclick="event.stopPropagation();lightboxNav(1)" aria-label="Next" style="position:absolute;right:20px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(13,13,13,.6);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s">&#8250;</button>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• SUBSCRIPTIONS â•â•â•â•â•â•â•â•â•â•â• -->
+  <section id="subscriptions" class="section">
+    <div class="container">
+      <div class="subs-header fade-in">
+        <div class="section-label">MONTHLY SUBSCRIPTIONS</div>
+        <div class="section-sub">Recurring Plans &middot; Direct Debit or Card</div>
+        <p>Set up a recurring monthly plan and never think about booking again. Your vehicle stays showroom-ready all year.</p>
+      </div>
+      <div class="subs-grid" id="subs-grid">
+        <!-- Bronze -->
+        <div class="sub-card fade-in">
+          <div class="sub-card-name">Bronze</div>
+          <div class="sub-card-desc">Essential monthly care to keep your vehicle clean and protected.</div>
+          <div class="sub-card-price">
+            <span class="currency">&pound;</span>
+            <span class="amount">39</span>
+            <span class="period">/ mo</span>
+          </div>
+          <ul class="sub-card-features">
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Exterior hand wash &amp; rinse</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Wheel clean &amp; tyre dressing</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Window polish (exterior)</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Air freshener treatment</li>
+          </ul>
+          <button class="sub-cta-btn" onclick="document.getElementById('booking')?.scrollIntoView({behavior:'smooth'})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Subscribe Now
+          </button>
+        </div>
+        <!-- Silver (popular) -->
+        <div class="sub-card popular fade-in" style="transition-delay:.1s">
+          <div class="sub-popular-badge">Most Popular</div>
+          <div class="sub-card-name">Silver</div>
+          <div class="sub-card-desc">Enhanced protection with paint sealant and interior care every month.</div>
+          <div class="sub-card-price">
+            <span class="currency">&pound;</span>
+            <span class="amount">59</span>
+            <span class="period">/ mo</span>
+          </div>
+          <ul class="sub-card-features">
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>All Bronze features</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Clay bar decontamination</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Paint sealant application</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Leather conditioning</li>
+          </ul>
+          <button class="sub-cta-btn popular-btn" onclick="document.getElementById('booking')?.scrollIntoView({behavior:'smooth'})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Subscribe Now
+          </button>
+        </div>
+        <!-- Gold -->
+        <div class="sub-card fade-in" style="transition-delay:.2s">
+          <div class="sub-card-name">Gold</div>
+          <div class="sub-card-desc">Ultimate luxury detailing with ceramic coating and a dedicated detailer.</div>
+          <div class="sub-card-price">
+            <span class="currency">&pound;</span>
+            <span class="amount">89</span>
+            <span class="period">/ mo</span>
+          </div>
+          <ul class="sub-card-features">
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>All Silver features</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Ceramic spray top-up</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Headlight restoration</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Dedicated detailer assigned</li>
+          </ul>
+          <button class="sub-cta-btn" onclick="document.getElementById('booking')?.scrollIntoView({behavior:'smooth'})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Subscribe Now
+          </button>
+        </div>
+      </div>
+      <p class="subs-footer-note">Secure payments via Stripe &mdash; cancel anytime, no lock-in contracts. Have a question? <a href="#contact">Get in touch.</a></p>
+    </div>
+  </section>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal-bg" role="dialog" aria-modal="true" aria-label="Subscribe">
+    <div class="checkout-modal">
+      <button class="checkout-modal-close" onclick="closeCheckout()" aria-label="Close">&times;</button>
+      <div id="checkout-body">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• CONTACT â•â•â•â•â•â•â•â•â•â•â• -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info fade-in">
+          <h2 class="section-label" id="contact-title-el">GET IN TOUCH</h2>
+          <p id="contact-sub-el">Have a question or want to discuss a bespoke package? We're happy to help &mdash; reach out through any channel below.</p>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 012 2.18 2 2 0 014 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">Phone</div>
+              <div class="contact-detail-value" data-contact="phone">07500 000000</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">Email</div>
+              <div class="contact-detail-value" data-contact="email">info@cleantorquedetailing.co.uk</div>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">Address</div>
+              <div class="contact-detail-value" data-contact="address">Clean Torque Detailing, United Kingdom</div>
+            </div>
+          </div>
+          <div class="map-placeholder">
+            <span>Google Map &mdash; embedded on launch</span>
+          </div>
+        </div>
+
+        <div class="contact-form fade-in">
+          <h3>SEND A MESSAGE</h3>
+          <form onsubmit="handleContact(event)">
+            <div class="form-field-group">
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="c-name">Name</label>
+                  <input type="text" id="c-name" placeholder="Your name" required />
+                </div>
+                <div class="form-field">
+                  <label for="c-email">Email</label>
+                  <input type="email" id="c-email" placeholder="you@example.com" required />
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="c-phone">Phone (optional)</label>
+                <input type="tel" id="c-phone" placeholder="07500 000000" />
+              </div>
+              <div class="form-field">
+                <label for="c-msg">Message</label>
+                <textarea id="c-msg" placeholder="Tell us how we can help&hellip;" rows="4" required></textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary contact-submit">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• FOOTER â•â•â•â•â•â•â•â•â•â•â• -->
+  <footer id="footer-el">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo">
+            <img src="Brand_Assets/logo_cropped.png" alt="Clean Torque Detailing" class="nav-logo-img" />
+          </a>
+          <p id="footer-tagline-el">Premium vehicle appearance specialists. Subscription-based detailing packages for discerning drivers.</p>
+          <div class="footer-socials">
+            <a href="#" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+            <a href="#" aria-label="TikTok"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.02a8.19 8.19 0 004.79 1.53V7.1a4.85 4.85 0 01-1.02-.41z"/></svg></a>
+            <a href="#" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#packages">Packages</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#booking">Book Now</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Packages</h4>
+          <ul>
+            <li><a href="#packages">Bronze Plan</a></li>
+            <li><a href="#packages">Silver Plan</a></li>
+            <li><a href="#packages">Gold Plan</a></li>
+            <li><a href="#booking">Add-ons</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="tel:07500000000">07500 000000</a></li>
+            <li><a href="mailto:info@cleantorquedetailing.co.uk">info@cleantorquedetailing.co.uk</a></li>
+            <li><a href="#contact">Send a message</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy" id="footer-copy-el">&copy; 2025 Clean Torque Detailing. All rights reserved.</div>
+        <div class="footer-legal">
+          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/terms">Terms &amp; Conditions</a>
+          <a href="#" onclick="openCookieSettings(); return false;">Cookie Settings</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â• JAVASCRIPT â•â•â•â•â•â•â•â•â•â•â• -->
+  <script src="/main.js"></script>
+</body>
+</html>

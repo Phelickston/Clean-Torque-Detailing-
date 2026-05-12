@@ -1,0 +1,9 @@
+node_modules/
+uploads/
+temporary screenshots/
+Skills/
+*.env
+.env.local
+db/database.sqlite
+db/database.sqlite-shm
+db/database.sqlite-wal
