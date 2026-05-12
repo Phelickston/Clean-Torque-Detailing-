@@ -231,7 +231,7 @@ function requireRole(...roles) {
 }
 
 /* ── File upload ───────────────────────────────────────────── */
-const uploadsDir = path.join(__dirname, 'uploads');
+const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const ALLOWED_MIME = new Set(['image/jpeg','image/png','image/webp','image/gif','image/svg+xml','video/mp4','video/webm','application/pdf']);
