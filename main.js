@@ -33,13 +33,6 @@
       card.querySelector('.tier-header').setAttribute('aria-expanded', isOpen);
     }
     document.querySelectorAll('.tier-header').forEach(h => {
-      h.addEventListener('click', () => {
-        const card = h.closest('.tier-card');
-        if (card) {
-          const isOpen = card.classList.toggle('open');
-          h.setAttribute('aria-expanded', isOpen);
-        }
-      });
       h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); } });
     });
 
