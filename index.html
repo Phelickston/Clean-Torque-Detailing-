@@ -586,7 +586,7 @@
       overflow: hidden;
       transition: max-height 0.5s cubic-bezier(.4,0,.2,1);
     }
-    .tier-card.open .tier-sub-plans { max-height: 900px; }
+    .tier-card.open .tier-sub-plans { max-height: 1400px; }
 
     .sub-plan {
       padding: 24px 28px;
@@ -652,6 +652,24 @@
     .sub-cta:hover { opacity: .85; transform: translateY(-1px); }
     .sub-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     .sub-cta:active { transform: translateY(0); }
+
+    .once-badge {
+      display: inline-block;
+      font-size: .58rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: rgba(26,111,255,.12);
+      color: #5a9fff;
+      border: 1px solid rgba(26,111,255,.2);
+      vertical-align: middle;
+      margin-left: 8px;
+      text-transform: uppercase;
+    }
+    .sub-plan-once {
+      border-bottom: 1px solid rgba(196,196,196,.14) !important;
+    }
 
     /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        BOOKING FORM
@@ -1580,7 +1598,7 @@
 
         <!-- BRONZE -->
         <div class="tier-card bronze fade-in" id="tier-bronze">
-          <div class="tier-header" onclick="toggleTier('tier-bronze')" role="button" tabindex="0" aria-expanded="false">
+          <div class="tier-header" role="button" tabindex="0" aria-expanded="false">
             <div>
               <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#CD7F32" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#CD7F32" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">3</text></svg></div>
               <div class="tier-name" style="margin-top:12px">BRONZE</div>
@@ -1591,6 +1609,20 @@
             </div>
           </div>
           <div class="tier-sub-plans">
+            <!-- Wash Once -->
+            <div class="sub-plan sub-plan-once">
+              <div class="sub-plan-top">
+                <div class="sub-freq">Wash Once <span class="once-badge">ONE-TIME</span></div>
+                <div class="sub-price">&pound;18</div>
+              </div>
+              <ul class="sub-features">
+                <li class="sub-feature">Exterior hand wash &amp; rinse</li>
+                <li class="sub-feature">Wheel clean &amp; tyre dressing</li>
+                <li class="sub-feature">Window polish (exterior)</li>
+                <li class="sub-feature">Air freshener treatment</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Bronze','1')">Book Once</button>
+            </div>
             <!-- 3/month -->
             <div class="sub-plan">
               <div class="sub-plan-top">
@@ -1638,7 +1670,7 @@
 
         <!-- SILVER -->
         <div class="tier-card silver fade-in" id="tier-silver" style="transition-delay:.1s">
-          <div class="tier-header" onclick="toggleTier('tier-silver')" role="button" tabindex="0" aria-expanded="false">
+          <div class="tier-header" role="button" tabindex="0" aria-expanded="false">
             <div>
               <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#A8A9AD" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#A8A9AD" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">2</text></svg></div>
               <div class="tier-name" style="margin-top:12px">SILVER</div>
@@ -1649,6 +1681,20 @@
             </div>
           </div>
           <div class="tier-sub-plans">
+            <!-- Wash Once -->
+            <div class="sub-plan sub-plan-once">
+              <div class="sub-plan-top">
+                <div class="sub-freq">Wash Once <span class="once-badge">ONE-TIME</span></div>
+                <div class="sub-price">&pound;28</div>
+              </div>
+              <ul class="sub-features">
+                <li class="sub-feature">All Bronze features</li>
+                <li class="sub-feature">Clay bar decontamination</li>
+                <li class="sub-feature">Paint sealant application</li>
+                <li class="sub-feature">Leather conditioning</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Silver','1')">Book Once</button>
+            </div>
             <div class="sub-plan">
               <div class="sub-plan-top">
                 <div class="sub-freq">3 Washes / Month</div>
@@ -1693,7 +1739,7 @@
 
         <!-- GOLD -->
         <div class="tier-card gold fade-in" id="tier-gold" style="transition-delay:.2s">
-          <div class="tier-header" onclick="toggleTier('tier-gold')" role="button" tabindex="0" aria-expanded="false">
+          <div class="tier-header" role="button" tabindex="0" aria-expanded="false">
             <div>
               <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#D4AF37" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">1</text></svg></div>
               <div class="tier-name" style="margin-top:12px">GOLD</div>
@@ -1704,6 +1750,20 @@
             </div>
           </div>
           <div class="tier-sub-plans">
+            <!-- Wash Once -->
+            <div class="sub-plan sub-plan-once">
+              <div class="sub-plan-top">
+                <div class="sub-freq">Wash Once <span class="once-badge">ONE-TIME</span></div>
+                <div class="sub-price">&pound;45</div>
+              </div>
+              <ul class="sub-features">
+                <li class="sub-feature">All Silver features</li>
+                <li class="sub-feature">Full ceramic coat top-up</li>
+                <li class="sub-feature">Paint correction included</li>
+                <li class="sub-feature">Engine bay detail</li>
+              </ul>
+              <button class="sub-cta" onclick="prefillBooking('Gold','1')">Book Once</button>
+            </div>
             <div class="sub-plan">
               <div class="sub-plan-top">
                 <div class="sub-freq">3 Washes / Month</div>
@@ -1819,6 +1879,11 @@
             <div class="form-step-title">CHOOSE FREQUENCY</div>
             <div class="form-step-sub">How often would you like a wash?</div>
             <div class="form-options form-freq-options" id="freq-options">
+              <label class="form-option" data-value="1">
+                <input type="radio" name="frequency" value="1" />
+                <div class="form-option-label">WASH ONCE</div>
+                <div class="form-option-sub">One-time</div>
+              </label>
               <label class="form-option" data-value="3">
                 <input type="radio" name="frequency" value="3" />
                 <div class="form-option-label">3 / MONTH</div>
