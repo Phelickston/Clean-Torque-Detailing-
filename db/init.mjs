@@ -64,6 +64,15 @@ db.exec(`
     created_at TEXT    DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS addons (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT    NOT NULL,
+    price      INTEGER NOT NULL DEFAULT 0,
+    visible    INTEGER NOT NULL DEFAULT 1,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT    DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS bookings (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     name          TEXT    NOT NULL,
@@ -197,6 +206,16 @@ if (!pkgTableInfo.includes('name')) {
     sort_order INTEGER NOT NULL DEFAULT 0,
     created_at TEXT    DEFAULT (datetime('now'))
   )`);
+}
+
+/* ── Seed add-ons ── */
+const addonCount = db.prepare('SELECT COUNT(*) as c FROM addons').get();
+if (addonCount.c === 0) {
+  const ins = db.prepare('INSERT INTO addons (name, price, sort_order) VALUES (?,?,?)');
+  ins.run('Engine Bay Clean', 35, 0);
+  ins.run('Odour Treatment', 20, 1);
+  ins.run('Paint Correction', 80, 2);
+  ins.run('Ceramic Top-Up', 45, 3);
 }
 
 /* ── Seed settings ── */

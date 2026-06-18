@@ -548,6 +548,55 @@ app.delete('/api/packages/:id', requireAuth, requireRole('super_admin', 'editor'
 });
 
 /* ═══════════════════════════════════════════════════════════
+   API: ADD-ONS
+═══════════════════════════════════════════════════════════ */
+app.get('/api/addons', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const rows = db.prepare('SELECT * FROM addons WHERE visible=1 ORDER BY sort_order ASC, id ASC').all();
+  res.json(rows);
+});
+
+app.get('/api/addons/all', requireAuth, (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const rows = db.prepare('SELECT * FROM addons ORDER BY sort_order ASC, id ASC').all();
+  res.json(rows);
+});
+
+app.post('/api/addons', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
+  const name  = sanitize(req.body?.name, 100);
+  const price = parseInt(req.body?.price) || 0;
+  const visible = req.body?.visible ?? 1;
+  if (!name) return res.status(400).json({ error: 'Add-on name required' });
+  const maxOrder = db.prepare('SELECT MAX(sort_order) as m FROM addons').get().m;
+  const sort_order = Number.isInteger(maxOrder) ? maxOrder + 1 : 0;
+  const result = db.prepare('INSERT INTO addons (name,price,visible,sort_order) VALUES (?,?,?,?)')
+    .run(name, price, visible ? 1 : 0, sort_order);
+  logSecurity('admin_action', req, `addon ${result.lastInsertRowid} created`);
+  res.json({ ok: true, id: result.lastInsertRowid });
+});
+
+app.put('/api/addons/:id', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Invalid ID' });
+  const name  = sanitize(req.body?.name, 100);
+  const price = parseInt(req.body?.price) || 0;
+  const visible = req.body?.visible ?? 1;
+  if (!name) return res.status(400).json({ error: 'Add-on name required' });
+  db.prepare('UPDATE addons SET name=?,price=?,visible=? WHERE id=?')
+    .run(name, price, visible ? 1 : 0, id);
+  logSecurity('admin_action', req, `addon ${id} updated`);
+  res.json({ ok: true });
+});
+
+app.delete('/api/addons/:id', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Invalid ID' });
+  db.prepare('DELETE FROM addons WHERE id=?').run(id);
+  logSecurity('admin_action', req, `addon ${id} deleted`);
+  res.json({ ok: true });
+});
+
+/* ═══════════════════════════════════════════════════════════
    API: BOOKINGS
 ═══════════════════════════════════════════════════════════ */
 app.get('/api/bookings', requireAuth, (req, res) => {

@@ -84,7 +84,7 @@ function navigate(sec) {
   }
   document.querySelectorAll('.sb-item').forEach(i => i.classList.toggle('active', i.dataset.section === sec));
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === `sec-${sec}`));
-  const titles = { dashboard:'Dashboard', bookings:'Bookings', contacts:'Messages', packages:'Packages & Pricing', gallery:'Media Manager', payments:'Payments', privacy:'Data & Privacy (GDPR)', settings:'Settings', builder:'Site Builder', preview:'Live Preview' };
+  const titles = { dashboard:'Dashboard', bookings:'Bookings', contacts:'Messages', packages:'Packages & Pricing', addons:'Add-ons', gallery:'Media Manager', payments:'Payments', privacy:'Data & Privacy (GDPR)', settings:'Settings', builder:'Site Builder', preview:'Live Preview' };
   document.getElementById('topBarTitle').textContent = titles[sec] || sec;
   document.getElementById('main').classList.toggle('preview-active', sec === 'preview');
   currentSection = sec;
@@ -92,6 +92,7 @@ function navigate(sec) {
   if (sec === 'bookings')  loadBookings();
   if (sec === 'contacts')  loadContacts();
   if (sec === 'packages')  loadSitePackages();
+  if (sec === 'addons')    loadAddons();
   if (sec === 'gallery')   loadMedia();
   if (sec === 'payments')  loadPayments();
   if (sec === 'settings')  loadSettings();
@@ -315,6 +316,93 @@ async function deleteSitePkg(id, name) {
   if (!confirm(`Delete package "${name}"? This cannot be undone.`)) return;
   const res = await fetch(`/api/packages/${id}`, { method: 'DELETE' });
   if (res.ok) { toast('Package deleted'); loadSitePackages(); }
+  else toast('Delete failed', 'error');
+}
+
+/* ── Add-ons ── */
+let _addons = [];
+
+async function loadAddons() {
+  const grid = document.getElementById('addon-grid');
+  grid.innerHTML = '<p style="color:var(--muted);font-size:.83rem">Loading add-ons…</p>';
+  try {
+    const res = await fetch('/api/addons/all');
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    _addons = await res.json();
+  } catch (err) {
+    grid.innerHTML = `<p style="color:var(--red);font-size:.83rem">Failed to load add-ons: ${err.message}. Please refresh.</p>`;
+    return;
+  }
+  renderAddonGrid();
+}
+
+function renderAddonGrid() {
+  const grid = document.getElementById('addon-grid');
+  if (!_addons.length) { grid.innerHTML = '<p style="color:var(--muted);font-size:.83rem">No add-ons yet. Add one above.</p>'; return; }
+  grid.innerHTML = _addons.map(a => `
+    <div class="sub-pkg-card">
+      <div class="sub-pkg-card-head">
+        <div class="sub-pkg-name">${esc(a.name)}</div>
+        <div>${a.visible ? '<span class="badge badge-confirmed">Visible</span>' : '<span class="badge badge-cancelled">Hidden</span>'}</div>
+      </div>
+      <div class="sub-pkg-price">£${parseInt(a.price) || 0}<span>/session</span></div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-ghost btn-xs" onclick="editAddon(${a.id})">Edit</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteAddon(${a.id},'${esc(a.name)}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function editAddon(id) {
+  const a = _addons.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('addon-edit-id').value = id;
+  document.getElementById('addon-name').value    = a.name;
+  document.getElementById('addon-price').value   = parseInt(a.price) || 0;
+  document.getElementById('addon-visible').checked = !!a.visible;
+}
+
+function resetAddonForm() {
+  document.getElementById('addon-edit-id').value = '';
+  ['addon-name','addon-price'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('addon-visible').checked = true;
+}
+
+async function saveAddon() {
+  const editId = document.getElementById('addon-edit-id').value;
+  const name    = document.getElementById('addon-name').value.trim();
+  const price   = parseInt(document.getElementById('addon-price').value);
+  if (!name || isNaN(price)) { toast('Add-on name and price are required', 'error'); return; }
+  const body = {
+    name, price,
+    visible: document.getElementById('addon-visible').checked ? 1 : 0,
+  };
+  const url    = editId ? `/api/addons/${editId}` : '/api/addons';
+  const method = editId ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      toast('Add-on saved — live site updated');
+      resetAddonForm();
+      loadAddons();
+    } else if (res.status === 401) {
+      toast('Session expired — please log in again', 'error');
+      setTimeout(() => { window.location.href = '/admin/login'; }, 1500);
+    } else if (res.status === 403) {
+      toast(data.error === 'Insufficient permissions' ? 'Your account does not have permission to edit add-ons' : 'Security check failed — please refresh the page', 'error');
+    } else {
+      toast(data.error || 'Save failed — please try again', 'error');
+    }
+  } catch (err) {
+    toast('Network error — check your connection', 'error');
+  }
+}
+
+async function deleteAddon(id, name) {
+  if (!confirm(`Delete add-on "${name}"? This cannot be undone.`)) return;
+  const res = await fetch(`/api/addons/${id}`, { method: 'DELETE' });
+  if (res.ok) { toast('Add-on deleted'); loadAddons(); }
   else toast('Delete failed', 'error');
 }
 

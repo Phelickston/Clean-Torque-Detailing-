@@ -147,9 +147,13 @@
         selectedFreq = opt.dataset.value;
       });
     });
-    document.querySelectorAll('.addon-option').forEach(opt => {
-      opt.addEventListener('click', () => { opt.classList.toggle('selected'); });
-    });
+    function wireAddonOptions() {
+      document.querySelectorAll('.addon-option').forEach(opt => {
+        const input = opt.querySelector('input');
+        if (input) input.addEventListener('change', () => { opt.classList.toggle('selected', input.checked); });
+      });
+    }
+    wireAddonOptions();
 
     /* â”€â”€ Lightbox â”€â”€ */
     const lightbox = document.getElementById('lightbox');
@@ -441,6 +445,22 @@
               <div class="form-option-sub">&pound;${parseInt(p.price) || 0}</div>
             </label>`).join('');
           wirePkgOptions();
+        }
+
+        // Load add-ons (booking form step 3)
+        const addons = await fetch('/api/addons').then(r => r.json());
+        const addonOptionsEl = document.getElementById('addon-options');
+        if (addonOptionsEl) {
+          addonOptionsEl.innerHTML = addons.map(a => `
+            <label class="addon-option" data-value="${escHtml(a.name)}">
+              <input type="checkbox" name="addons" value="${escHtml(a.name)}" />
+              <div class="addon-check"></div>
+              <div>
+                <div class="addon-name">${escHtml(a.name)}</div>
+                <div class="addon-price">+&pound;${parseInt(a.price) || 0}/session</div>
+              </div>
+            </label>`).join('');
+          wireAddonOptions();
         }
 
         // Load media (gallery photos)
