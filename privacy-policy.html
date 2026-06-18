@@ -79,8 +79,10 @@
 
   <div class="page">
     <div class="page-label">Legal</div>
-    <h1 class="page-title">PRIVACY POLICY</h1>
-    <p class="page-date">Last updated: May 2026 &mdash; Version 1.1</p>
+    <h1 class="page-title" id="legal-title">PRIVACY POLICY</h1>
+    <p class="page-date" id="legal-date">Last updated: May 2026 &mdash; Version 1.1</p>
+
+    <div id="legal-content">
 
     <div class="notice">
       <p><strong>Plain-English summary:</strong> We collect only the personal information we need to run your detailing subscription and bookings. We don't sell your data. You have full control — you can request a copy, correct it, or ask us to delete it at any time.</p>
@@ -219,6 +221,8 @@
       </p>
     </div>
 
+    </div>
+
     <div class="page-footer">
       <a href="/">Home</a>
       <a href="/terms">Terms &amp; Conditions</a>
@@ -226,5 +230,20 @@
     </div>
   </div>
 
+
+  <script>
+    fetch("/api/legal/privacy-policy")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        const titleEl = document.getElementById("legal-title");
+        const dateEl  = document.getElementById("legal-date");
+        const contentEl = document.getElementById("legal-content");
+        if (titleEl && data.title) titleEl.innerHTML = data.title;
+        if (dateEl && data.updated_label) dateEl.innerHTML = data.updated_label;
+        if (contentEl && typeof data.content === "string") contentEl.innerHTML = data.content;
+      })
+      .catch(() => {});
+  </script>
 </body>
 </html>

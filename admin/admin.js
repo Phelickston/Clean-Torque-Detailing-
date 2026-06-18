@@ -84,7 +84,7 @@ function navigate(sec) {
   }
   document.querySelectorAll('.sb-item').forEach(i => i.classList.toggle('active', i.dataset.section === sec));
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === `sec-${sec}`));
-  const titles = { dashboard:'Dashboard', bookings:'Bookings', contacts:'Messages', packages:'Packages & Pricing', addons:'Add-ons', gallery:'Media Manager', payments:'Payments', privacy:'Data & Privacy (GDPR)', settings:'Settings', builder:'Site Builder', preview:'Live Preview' };
+  const titles = { dashboard:'Dashboard', bookings:'Bookings', contacts:'Messages', packages:'Packages & Pricing', addons:'Add-ons', gallery:'Media Manager', payments:'Payments', privacy:'Data & Privacy (GDPR)', legal:'Legal Pages', settings:'Settings', builder:'Site Builder', preview:'Live Preview' };
   document.getElementById('topBarTitle').textContent = titles[sec] || sec;
   document.getElementById('main').classList.toggle('preview-active', sec === 'preview');
   currentSection = sec;
@@ -97,6 +97,7 @@ function navigate(sec) {
   if (sec === 'payments')  loadPayments();
   if (sec === 'settings')  loadSettings();
   if (sec === 'privacy')   loadPrivacy();
+  if (sec === 'legal')     loadLegalPages();
   if (sec === 'builder')   loadBuilder();
   if (sec === 'preview')   initPreview();
 }
@@ -404,6 +405,65 @@ async function deleteAddon(id, name) {
   const res = await fetch(`/api/addons/${id}`, { method: 'DELETE' });
   if (res.ok) { toast('Add-on deleted'); loadAddons(); }
   else toast('Delete failed', 'error');
+}
+
+/* ── Legal Pages ── */
+async function loadLegalPage(slug) {
+  try {
+    const res = await fetch(`/api/legal/${slug}`);
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    const data = await res.json();
+    document.getElementById(`legal-${slug}-title`).value   = data.title || '';
+    document.getElementById(`legal-${slug}-updated`).value = data.updated_label || '';
+    document.getElementById(`legal-${slug}-content`).value = data.content || '';
+    document.getElementById(`legal-${slug}-loaded`).value  = '1';
+  } catch (err) {
+    toast(`Failed to load page: ${err.message}`, 'error');
+  }
+}
+
+function loadLegalPages() {
+  loadLegalPage('terms');
+}
+
+document.querySelectorAll('#legal-tabs .legal-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const slug = tab.dataset.legal;
+    document.querySelectorAll('#legal-tabs .legal-tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.querySelectorAll('.legal-panel').forEach(p => p.classList.toggle('active', p.id === `legalpanel-${slug}`));
+    if (document.getElementById(`legal-${slug}-loaded`).value !== '1') loadLegalPage(slug);
+  });
+});
+
+async function saveLegalPage(slug) {
+  const title         = document.getElementById(`legal-${slug}-title`).value.trim();
+  const updated_label = document.getElementById(`legal-${slug}-updated`).value.trim();
+  const content        = document.getElementById(`legal-${slug}-content`).value;
+  try {
+    const res = await fetch(`/api/legal/${slug}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, updated_label, content }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      toast('Page saved — live site updated');
+    } else if (res.status === 401) {
+      toast('Session expired — please log in again', 'error');
+      setTimeout(() => { window.location.href = '/admin/login'; }, 1500);
+    } else if (res.status === 403) {
+      toast(data.error === 'Insufficient permissions' ? 'Your account does not have permission to edit this page' : 'Security check failed — please refresh the page', 'error');
+    } else {
+      toast(data.error || 'Save failed — please try again', 'error');
+    }
+  } catch (err) {
+    toast('Network error — check your connection', 'error');
+  }
+}
+
+function clearLegalContent(slug) {
+  if (!confirm('Clear all content for this page? This empties the editor below — nothing is removed from the live site until you click Save.')) return;
+  document.getElementById(`legal-${slug}-content`).value = '';
 }
 
 /* ── Media ── */

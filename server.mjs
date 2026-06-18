@@ -597,6 +597,39 @@ app.delete('/api/addons/:id', requireAuth, requireRole('super_admin', 'editor'),
 });
 
 /* ═══════════════════════════════════════════════════════════
+   API: LEGAL PAGES (Terms & Conditions, Privacy Policy)
+═══════════════════════════════════════════════════════════ */
+const LEGAL_SLUGS = new Set(['terms', 'privacy-policy']);
+
+app.get('/api/legal/:slug', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const slug = sanitize(req.params.slug, 50);
+  if (!LEGAL_SLUGS.has(slug)) return res.status(404).json({ error: 'Not found' });
+  const row = db.prepare('SELECT * FROM legal_pages WHERE slug=?').get(slug);
+  if (!row) return res.status(404).json({ error: 'Not found' });
+  res.json(row);
+});
+
+app.put('/api/legal/:slug', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
+  const slug = sanitize(req.params.slug, 50);
+  if (!LEGAL_SLUGS.has(slug)) return res.status(404).json({ error: 'Not found' });
+  const title         = sanitize(req.body?.title || '', 200);
+  const updated_label = sanitize(req.body?.updated_label || '', 200);
+  const content        = typeof req.body?.content === 'string' ? req.body.content.slice(0, 100000) : '';
+  const now = new Date().toISOString();
+  const exists = db.prepare('SELECT slug FROM legal_pages WHERE slug=?').get(slug);
+  if (exists) {
+    db.prepare('UPDATE legal_pages SET title=?,updated_label=?,content=?,updated_at=? WHERE slug=?')
+      .run(title, updated_label, content, now, slug);
+  } else {
+    db.prepare('INSERT INTO legal_pages (slug,title,updated_label,content,updated_at) VALUES (?,?,?,?,?)')
+      .run(slug, title, updated_label, content, now);
+  }
+  logSecurity('admin_action', req, `legal page "${slug}" updated`);
+  res.json({ ok: true });
+});
+
+/* ═══════════════════════════════════════════════════════════
    API: BOOKINGS
 ═══════════════════════════════════════════════════════════ */
 app.get('/api/bookings', requireAuth, (req, res) => {

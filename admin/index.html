@@ -490,6 +490,15 @@
     .ptab.active { background:var(--blue-dim); color:var(--blue); }
     .ppanel { display:none; }
     .ppanel.active { display:block; }
+
+    /* ─── LEGAL PAGES ────────────────────────────────────────── */
+    .legal-tabs { display:flex; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:4px; margin-bottom:22px; flex-wrap:wrap; }
+    .legal-tab { padding:7px 13px; border-radius:6px; font-size:.73rem; font-weight:600; border:none; background:transparent; color:var(--text2); cursor:pointer; font-family:inherit; letter-spacing:.04em; transition:background .15s,color .15s; }
+    .legal-tab:hover { background:var(--surface2); color:var(--text); }
+    .legal-tab.active { background:var(--blue-dim); color:var(--blue); }
+    .legal-panel { display:none; }
+    .legal-panel.active { display:block; }
+    .legal-content-textarea { font-family:monospace; font-size:.8rem; min-height:380px; line-height:1.5; }
     .pay-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
     .pay-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px; }
     .pay-card-label { font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
@@ -685,6 +694,10 @@
     <div class="sb-item" data-section="privacy">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       Data &amp; Privacy
+    </div>
+    <div class="sb-item" data-section="legal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+      Legal Pages
     </div>
 
     <div class="sb-section-label">Config</div>
@@ -1060,6 +1073,45 @@
                 <tbody id="breach-log-body"><tr class="empty-row"><td colspan="6">Loading…</td></tr></tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── LEGAL PAGES ─── -->
+      <div class="section" id="sec-legal">
+        <div class="section-title">Legal Pages</div>
+        <div class="section-sub">Edit the Terms &amp; Conditions and Privacy Policy pages. Changes reflect on the live site immediately after saving.</div>
+
+        <div class="legal-tabs" id="legal-tabs">
+          <button class="legal-tab active" data-legal="terms">Terms &amp; Conditions</button>
+          <button class="legal-tab" data-legal="privacy-policy">Privacy Policy</button>
+        </div>
+
+        <div class="legal-panel active" id="legalpanel-terms">
+          <input type="hidden" id="legal-terms-loaded" value="0" />
+          <div class="bgrid2">
+            <div class="field"><label>Page Title</label><input type="text" id="legal-terms-title" placeholder="TERMS &amp; CONDITIONS" /></div>
+            <div class="field"><label>Last Updated Label</label><input type="text" id="legal-terms-updated" placeholder="Last updated: May 2025 — Version 1.0" /></div>
+          </div>
+          <div class="field"><label>Content (HTML)</label><textarea id="legal-terms-content" class="legal-content-textarea" rows="18" placeholder="&lt;h2&gt;1. About Us&lt;/h2&gt;&#10;&lt;p&gt;...&lt;/p&gt;"></textarea></div>
+          <div class="pkg-save-row">
+            <button class="btn btn-primary" onclick="saveLegalPage('terms')">Save Terms &amp; Conditions</button>
+            <button class="btn btn-ghost" onclick="clearLegalContent('terms')">Clear Content</button>
+            <a class="btn btn-ghost" href="/terms" target="_blank" rel="noopener">View Live Page</a>
+          </div>
+        </div>
+
+        <div class="legal-panel" id="legalpanel-privacy-policy">
+          <input type="hidden" id="legal-privacy-policy-loaded" value="0" />
+          <div class="bgrid2">
+            <div class="field"><label>Page Title</label><input type="text" id="legal-privacy-policy-title" placeholder="PRIVACY POLICY" /></div>
+            <div class="field"><label>Last Updated Label</label><input type="text" id="legal-privacy-policy-updated" placeholder="Last updated: May 2026 — Version 1.1" /></div>
+          </div>
+          <div class="field"><label>Content (HTML)</label><textarea id="legal-privacy-policy-content" class="legal-content-textarea" rows="18" placeholder="&lt;h2&gt;1. Introduction&lt;/h2&gt;&#10;&lt;p&gt;...&lt;/p&gt;"></textarea></div>
+          <div class="pkg-save-row">
+            <button class="btn btn-primary" onclick="saveLegalPage('privacy-policy')">Save Privacy Policy</button>
+            <button class="btn btn-ghost" onclick="clearLegalContent('privacy-policy')">Clear Content</button>
+            <a class="btn btn-ghost" href="/privacy-policy" target="_blank" rel="noopener">View Live Page</a>
           </div>
         </div>
       </div>

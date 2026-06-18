@@ -73,6 +73,14 @@ db.exec(`
     created_at TEXT    DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS legal_pages (
+    slug          TEXT PRIMARY KEY,
+    title         TEXT NOT NULL DEFAULT '',
+    updated_label TEXT NOT NULL DEFAULT '',
+    content       TEXT NOT NULL DEFAULT '',
+    updated_at    TEXT DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS bookings (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     name          TEXT    NOT NULL,
@@ -216,6 +224,49 @@ if (addonCount.c === 0) {
   ins.run('Odour Treatment', 20, 1);
   ins.run('Paint Correction', 80, 2);
   ins.run('Ceramic Top-Up', 45, 3);
+}
+
+/* ── Seed legal pages (one-time extraction from the existing static HTML) ── */
+function extractLegalSeed(htmlPath) {
+  if (!fs.existsSync(htmlPath)) return null;
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const titleStart = html.indexOf('<h1 class="page-title"');
+  if (titleStart === -1) return null;
+  const titleTagEnd = html.indexOf('>', titleStart) + 1;
+  const titleEnd    = html.indexOf('</h1>', titleTagEnd);
+  const dateStart   = html.indexOf('<p class="page-date"', titleEnd);
+  if (dateStart === -1) return null;
+  const dateTagEnd = html.indexOf('>', dateStart) + 1;
+  const dateEnd    = html.indexOf('</p>', dateTagEnd);
+  if (titleEnd === -1 || dateEnd === -1) return null;
+
+  // Content may already be wrapped in <div id="legal-content"> from a previous patch — extract from inside it if present
+  const contentMarker  = '<div id="legal-content">';
+  const contentDivStart = html.indexOf(contentMarker, dateEnd);
+  let content;
+  if (contentDivStart !== -1) {
+    const contentStart = contentDivStart + contentMarker.length;
+    const contentDivEnd = html.lastIndexOf('</div>', html.indexOf('<div class="page-footer">', contentStart));
+    content = html.slice(contentStart, contentDivEnd).trim();
+  } else {
+    const footerStart = html.indexOf('<div class="page-footer">');
+    if (footerStart === -1) return null;
+    content = html.slice(dateEnd + '</p>'.length, footerStart).trim();
+  }
+  return {
+    title:         html.slice(titleTagEnd, titleEnd).trim(),
+    updated_label: html.slice(dateTagEnd, dateEnd).trim(),
+    content,
+  };
+}
+
+const legalCount = db.prepare('SELECT COUNT(*) as c FROM legal_pages').get();
+if (legalCount.c === 0) {
+  const ins = db.prepare('INSERT INTO legal_pages (slug,title,updated_label,content) VALUES (?,?,?,?)');
+  const termsSeed   = extractLegalSeed(path.join(__dirname, '..', 'terms.html'));
+  const privacySeed = extractLegalSeed(path.join(__dirname, '..', 'privacy-policy.html'));
+  if (termsSeed)   ins.run('terms', termsSeed.title, termsSeed.updated_label, termsSeed.content);
+  if (privacySeed) ins.run('privacy-policy', privacySeed.title, privacySeed.updated_label, privacySeed.content);
 }
 
 /* ── Seed settings ── */

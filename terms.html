@@ -59,8 +59,10 @@
 
   <div class="page">
     <div class="page-label">Legal</div>
-    <h1 class="page-title">TERMS &amp; CONDITIONS</h1>
-    <p class="page-date">Last updated: May 2025 &mdash; Version 1.0</p>
+    <h1 class="page-title" id="legal-title">TERMS &amp; CONDITIONS</h1>
+    <p class="page-date" id="legal-date">Last updated: May 2025 &mdash; Version 1.0</p>
+
+    <div id="legal-content">
 
     <h2>1. About Us</h2>
     <p><strong>Clean Torque Detailing</strong> is a vehicle appearance and detailing business based in the United Kingdom.</p>
@@ -151,6 +153,8 @@
     <h2>11. Changes to These Terms</h2>
     <p>We may update these Terms &amp; Conditions from time to time. We will notify you of any material changes by email or by posting a notice on our website. Continued use of our services after changes take effect constitutes acceptance of the updated terms.</p>
 
+    </div>
+
     <div class="page-footer">
       <a href="/">Home</a>
       <a href="/privacy-policy">Privacy Policy</a>
@@ -158,5 +162,20 @@
     </div>
   </div>
 
+
+  <script>
+    fetch("/api/legal/terms")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        const titleEl = document.getElementById("legal-title");
+        const dateEl  = document.getElementById("legal-date");
+        const contentEl = document.getElementById("legal-content");
+        if (titleEl && data.title) titleEl.innerHTML = data.title;
+        if (dateEl && data.updated_label) dateEl.innerHTML = data.updated_label;
+        if (contentEl && typeof data.content === "string") contentEl.innerHTML = data.content;
+      })
+      .catch(() => {});
+  </script>
 </body>
 </html>
