@@ -25,23 +25,13 @@
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
     }, { threshold: 0.12 });
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-    /* â”€â”€ Tier toggle â”€â”€ */
-    function toggleTier(id) {
-      const card = document.getElementById(id);
-      const isOpen = card.classList.toggle('open');
-      card.querySelector('.tier-header').setAttribute('aria-expanded', isOpen);
+    function observeFadeIns() {
+      document.querySelectorAll('.fade-in:not(.visible)').forEach(el => observer.observe(el));
     }
-    document.querySelectorAll('.tier-header').forEach(h => {
-      h.addEventListener('click', () => {
-        const card = h.closest('.tier-card');
-        if (card) {
-          const isOpen = card.classList.toggle('open');
-          h.setAttribute('aria-expanded', isOpen);
-        }
-      });
-      h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); } });
-    });
+
+    function escHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+    }
 
     /* â”€â”€ Booking form â”€â”€ */
     let currentStep = 1;
@@ -141,13 +131,15 @@
     }
 
     /* â”€â”€ Option selectors â”€â”€ */
-    document.querySelectorAll('#pkg-options .form-option').forEach(opt => {
-      opt.addEventListener('click', () => {
-        document.querySelectorAll('#pkg-options .form-option').forEach(o => o.classList.remove('selected'));
-        opt.classList.add('selected');
-        selectedPkg = opt.dataset.value;
+    function wirePkgOptions() {
+      document.querySelectorAll('#pkg-options .form-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('#pkg-options .form-option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          selectedPkg = opt.dataset.value;
+        });
       });
-    });
+    }
     document.querySelectorAll('#freq-options .form-option').forEach(opt => {
       opt.addEventListener('click', () => {
         document.querySelectorAll('#freq-options .form-option').forEach(o => o.classList.remove('selected'));
@@ -371,10 +363,6 @@
           if (s.packages_padding_bottom) pkgSec.style.paddingBottom = s.packages_padding_bottom + 'px';
           if (s.packages_bg_color)       pkgSec.style.background    = s.packages_bg_color;
         }
-        if (s.tier_bronze_name) { const e = document.getElementById('tier-name-bronze'); if (e) e.textContent = s.tier_bronze_name; }
-        if (s.tier_silver_name) { const e = document.getElementById('tier-name-silver'); if (e) e.textContent = s.tier_silver_name; }
-        if (s.tier_gold_name)   { const e = document.getElementById('tier-name-gold');   if (e) e.textContent = s.tier_gold_name; }
-
         // â”€â”€ Booking section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const bookSec = document.getElementById('booking');
         if (bookSec) {
@@ -416,20 +404,43 @@
           if (s.footer_bg_color)  footerDom.style.background = s.footer_bg_color;
         }
 
-        // Load packages (prices + features)
+        // Load packages (name, price, about)
         const pkgs = await fetch('/api/packages').then(r => r.json());
-        for (const p of pkgs) {
-          const priceEl = document.querySelector(`.sub-price[data-tier="${p.tier}"][data-freq="${p.freq}"]`);
-          if (priceEl) priceEl.innerHTML = p.freq === 1 ? `&pound;${p.price}` : `&pound;${p.price}<span>/mo</span>`;
-          const featuresList = document.querySelector(`.sub-features[data-tier="${p.tier}"][data-freq="${p.freq}"]`);
-          if (featuresList && p.features?.length) {
-            featuresList.innerHTML = p.features.map(f => `<li class="sub-feature">${f}</li>`).join('');
+        const pkgGrid  = document.getElementById('packages-grid');
+        const pkgEmpty = document.getElementById('packages-empty');
+        if (pkgGrid) {
+          if (pkgs.length) {
+            pkgEmpty.style.display = 'none';
+            pkgGrid.innerHTML = pkgs.map(p => `
+              <div class="sub-card fade-in">
+                <div class="sub-card-name">${escHtml(p.name)}</div>
+                <div class="sub-card-price">
+                  <span class="currency">&pound;</span>
+                  <span class="amount">${parseInt(p.price) || 0}</span>
+                </div>
+                ${p.about ? `<p class="sub-card-desc" style="white-space:pre-line">${escHtml(p.about)}</p>` : ''}
+                <button class="sub-cta-btn pkg-book-btn" data-pkg-name="${escHtml(p.name)}" style="margin-top:auto">Book This Package</button>
+              </div>`).join('');
+            document.querySelectorAll('.pkg-book-btn').forEach(btn => {
+              btn.addEventListener('click', () => prefillBooking(btn.dataset.pkgName));
+            });
+            observeFadeIns();
+          } else {
+            pkgGrid.innerHTML = '';
+            if (pkgEmpty) pkgEmpty.style.display = '';
           }
-          // Hide tier if not visible
-          if (!p.visible) {
-            const tierCard = document.getElementById(`tier-${p.tier}`);
-            if (tierCard) tierCard.style.display = 'none';
-          }
+        }
+        // Populate booking form's package step from the same list
+        const pkgOptionsEl = document.getElementById('pkg-options');
+        if (pkgOptionsEl) {
+          pkgOptionsEl.innerHTML = pkgs.map(p => `
+            <label class="form-option" data-value="${escHtml(p.name)}">
+              <input type="radio" name="package" value="${escHtml(p.name)}" />
+              <div class="form-option-dot"></div>
+              <div class="form-option-label">${escHtml(p.name.toUpperCase())}</div>
+              <div class="form-option-sub">&pound;${parseInt(p.price) || 0}</div>
+            </label>`).join('');
+          wirePkgOptions();
         }
 
         // Load media (gallery photos)

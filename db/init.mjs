@@ -55,12 +55,13 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS packages (
-    tier    TEXT    NOT NULL,
-    freq    INTEGER NOT NULL,
-    price   INTEGER NOT NULL DEFAULT 0,
-    features TEXT   NOT NULL DEFAULT '[]',
-    visible INTEGER NOT NULL DEFAULT 1,
-    PRIMARY KEY (tier, freq)
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT    NOT NULL,
+    price      INTEGER NOT NULL DEFAULT 0,
+    about      TEXT    NOT NULL DEFAULT '',
+    visible    INTEGER NOT NULL DEFAULT 1,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT    DEFAULT (datetime('now'))
   );
 
   CREATE TABLE IF NOT EXISTS bookings (
@@ -183,36 +184,20 @@ const mediaColMigrations = [
 ];
 for (const sql of mediaColMigrations) { try { db.exec(sql); } catch {} }
 
-/* ── Seed packages ── */
-const defaultPackages = [
-  { tier:'bronze', freq:1,  price:18,  features:['Exterior hand wash & rinse','Wheel clean & tyre dressing','Window polish (exterior)','Air freshener treatment'] },
-  { tier:'bronze', freq:3,  price:39,  features:['Exterior hand wash & rinse','Wheel clean & tyre dressing','Window polish (exterior)','Air freshener treatment'] },
-  { tier:'bronze', freq:6,  price:69,  features:['Everything in 3-wash plan','Interior vacuum & wipe-down','Tyre shine application','Door shuts & sill clean'] },
-  { tier:'bronze', freq:12, price:119, features:['Everything in 6-wash plan','Full interior deep clean','Dashboard & trim dressing','Priority scheduling'] },
-  { tier:'silver', freq:1,  price:28,  features:['All Bronze features','Clay bar decontamination','Paint sealant application','Leather conditioning'] },
-  { tier:'silver', freq:3,  price:59,  features:['All Bronze features','Clay bar decontamination','Paint sealant application','Leather conditioning'] },
-  { tier:'silver', freq:6,  price:99,  features:['All Bronze 6-wash features','Machine polish (light swirls)','Alloy wheel refurbishment','UV protectant on plastics'] },
-  { tier:'silver', freq:12, price:169, features:['All Silver 6-wash features','Ceramic spray top-up','Headlight restoration','Dedicated detailer assigned'] },
-  { tier:'gold',   freq:1,  price:45,  features:['All Silver features','Full ceramic coat top-up','Paint correction included','Engine bay detail'] },
-  { tier:'gold',   freq:3,  price:89,  features:['All Silver features','Full ceramic coat top-up','Paint correction included','Engine bay detail'] },
-  { tier:'gold',   freq:6,  price:149, features:['All Gold 3-wash features','Full interior detail & shampoo','Odour elimination treatment','Concierge pickup & return'] },
-  { tier:'gold',   freq:12, price:239, features:['All Gold 6-wash features','Graphene ceramic coating','Monthly inspection report','VIP priority at all times'] },
-];
-
-const pkgCount = db.prepare('SELECT COUNT(*) as c FROM packages').get();
-if (pkgCount.c === 0) {
-  const ins = db.prepare('INSERT INTO packages (tier, freq, price, features) VALUES (?,?,?,?)');
-  for (const p of defaultPackages) ins.run(p.tier, p.freq, p.price, JSON.stringify(p.features));
+/* ── Migrate: old packages table used a tier+freq grid; rebuild as a flexible list ── */
+const pkgTableInfo = db.prepare("PRAGMA table_info(packages)").all().map(c => c.name);
+if (!pkgTableInfo.includes('name')) {
+  db.exec('DROP TABLE IF EXISTS packages');
+  db.exec(`CREATE TABLE packages (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT    NOT NULL,
+    price      INTEGER NOT NULL DEFAULT 0,
+    about      TEXT    NOT NULL DEFAULT '',
+    visible    INTEGER NOT NULL DEFAULT 1,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT    DEFAULT (datetime('now'))
+  )`);
 }
-
-/* ── Migrate: add Wash Once (freq=1) packages if missing ── */
-const washOnceDefaults = [
-  { tier:'bronze', freq:1, price:18, features:['Exterior hand wash & rinse','Wheel clean & tyre dressing','Window polish (exterior)','Air freshener treatment'] },
-  { tier:'silver', freq:1, price:28, features:['All Bronze features','Clay bar decontamination','Paint sealant application','Leather conditioning'] },
-  { tier:'gold',   freq:1, price:45, features:['All Silver features','Full ceramic coat top-up','Paint correction included','Engine bay detail'] },
-];
-const insOrIgnore = db.prepare('INSERT OR IGNORE INTO packages (tier, freq, price, features) VALUES (?,?,?,?)');
-for (const p of washOnceDefaults) insOrIgnore.run(p.tier, p.freq, p.price, JSON.stringify(p.features));
 
 /* ── Seed settings ── */
 const defaults = {
@@ -280,14 +265,11 @@ const defaults = {
   // Packages section
   packages_show: '1',
   packages_title: 'OUR PACKAGES',
-  packages_sub: 'Choose your tier — select a plan inside to see pricing',
+  packages_sub: 'Choose the package that fits your vehicle',
   packages_title_color: '#F5F5F5',
   packages_bg_color: '',
   packages_padding_top: '100',
   packages_padding_bottom: '100',
-  tier_bronze_name: 'BRONZE',
-  tier_silver_name: 'SILVER',
-  tier_gold_name: 'GOLD',
   // Booking section
   booking_show: '1',
   booking_title: 'BUILD YOUR PLAN',

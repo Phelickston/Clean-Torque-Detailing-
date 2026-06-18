@@ -66,7 +66,7 @@ async function loadUserInfo() {
 /* ── Nav ── */
 let currentSection = 'dashboard';
 let currentBookingId = null;
-let allPackages = [];
+let _sitePkgs = [];
 
 function navigate(sec) {
   // Restore sidebar/topbar if leaving full preview mode
@@ -91,7 +91,7 @@ function navigate(sec) {
   if (sec === 'dashboard') loadDashboard();
   if (sec === 'bookings')  loadBookings();
   if (sec === 'contacts')  loadContacts();
-  if (sec === 'packages')  loadPackages();
+  if (sec === 'packages')  loadSitePackages();
   if (sec === 'gallery')   loadMedia();
   if (sec === 'payments')  loadPayments();
   if (sec === 'settings')  loadSettings();
@@ -231,89 +231,73 @@ async function deleteContact(id) {
 }
 
 /* ── Packages ── */
-async function loadPackages() {
-  const grid = document.getElementById('pkgGrid');
+async function loadSitePackages() {
+  const grid = document.getElementById('site-pkg-grid');
   grid.innerHTML = '<p style="color:var(--muted);font-size:.83rem">Loading packages…</p>';
   try {
-    const [pkgRes, settingsRes] = await Promise.all([
-      fetch('/api/packages'),
-      fetch('/api/settings'),
-    ]);
-    if (!pkgRes.ok) throw new Error(`Server error ${pkgRes.status}`);
-    allPackages = await pkgRes.json();
-    const s = settingsRes.ok ? await settingsRes.json() : {};
-    document.getElementById('pkg-name-bronze').value = s.tier_bronze_name || 'BRONZE';
-    document.getElementById('pkg-name-silver').value = s.tier_silver_name || 'SILVER';
-    document.getElementById('pkg-name-gold').value   = s.tier_gold_name   || 'GOLD';
+    const res = await fetch('/api/packages/all');
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    _sitePkgs = await res.json();
   } catch (err) {
     grid.innerHTML = `<p style="color:var(--red);font-size:.83rem">Failed to load packages: ${err.message}. Please refresh.</p>`;
     return;
   }
-  const tierInfo = {
-    bronze: { label:'Bronze', cls:'pkg-tier-bronze', emoji:'🥉' },
-    silver: { label:'Silver', cls:'pkg-tier-silver', emoji:'🥈' },
-    gold:   { label:'Gold',   cls:'pkg-tier-gold',   emoji:'🥇' },
-  };
-  grid.innerHTML = allPackages.map(p => {
-    const t = tierInfo[p.tier] || {};
-    const freqLabel = p.freq === 1 ? 'Wash Once' : `${p.freq} / month`;
-    const featuresText = (p.features || []).join('\n');
-    return `<div class="pkg-card ${t.cls}">
-      <div class="pkg-card-header">
-        <div class="pkg-tier-dot"></div>
-        <div class="pkg-tier-label">${t.emoji} ${t.label}</div>
-        <div class="pkg-freq-label">${freqLabel}</div>
-      </div>
-      <div class="pkg-price-row">
-        <span class="currency">£</span>
-        <input class="pkg-price-input" type="number" min="0" max="9999" value="${p.price}" data-tier="${p.tier}" data-freq="${p.freq}" data-field="price" />
-        <span class="per">${p.freq === 1 ? 'one-time' : '/mo'}</span>
-      </div>
-      <label class="vis-toggle">
-        <input type="checkbox" ${p.visible ? 'checked' : ''} data-tier="${p.tier}" data-freq="${p.freq}" data-field="visible" /> Visible on site
-      </label>
-      <div class="pkg-features-label">Features (one per line)</div>
-      <textarea class="pkg-features-textarea" rows="5" data-tier="${p.tier}" data-freq="${p.freq}" data-field="features">${esc(featuresText)}</textarea>
-    </div>`;
-  }).join('');
+  renderSitePkgGrid();
 }
 
-async function savePackages() {
-  if (!allPackages.length) { toast('No packages loaded — please refresh the page', 'error'); return; }
-  const btn = document.querySelector('#sec-packages .btn-primary');
-  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
-  const updated = allPackages.map(p => {
-    const price   = document.querySelector(`input[data-tier="${p.tier}"][data-freq="${p.freq}"][data-field="price"]`);
-    const vis     = document.querySelector(`input[data-tier="${p.tier}"][data-freq="${p.freq}"][data-field="visible"]`);
-    const featTa  = document.querySelector(`textarea[data-tier="${p.tier}"][data-freq="${p.freq}"][data-field="features"]`);
-    return {
-      tier: p.tier, freq: p.freq,
-      price: parseInt(price?.value) || p.price,
-      visible: vis?.checked ? 1 : 0,
-      features: featTa?.value.split('\n').map(s => s.trim()).filter(Boolean) || p.features,
-    };
-  });
-  const tierNames = {
-    tier_bronze_name: document.getElementById('pkg-name-bronze').value.trim() || 'BRONZE',
-    tier_silver_name: document.getElementById('pkg-name-silver').value.trim() || 'SILVER',
-    tier_gold_name:   document.getElementById('pkg-name-gold').value.trim()   || 'GOLD',
+function renderSitePkgGrid() {
+  const grid = document.getElementById('site-pkg-grid');
+  if (!_sitePkgs.length) { grid.innerHTML = '<p style="color:var(--muted);font-size:.83rem">No packages yet. Add one above.</p>'; return; }
+  grid.innerHTML = _sitePkgs.map(p => `
+    <div class="sub-pkg-card">
+      <div class="sub-pkg-card-head">
+        <div class="sub-pkg-name">${esc(p.name)}</div>
+        <div>${p.visible ? '<span class="badge badge-confirmed">Visible</span>' : '<span class="badge badge-cancelled">Hidden</span>'}</div>
+      </div>
+      <div class="sub-pkg-price">£${parseInt(p.price) || 0}</div>
+      <p style="font-size:.75rem;color:var(--muted);margin:6px 0 10px;white-space:pre-line">${esc(p.about || '')}</p>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-xs" onclick="editSitePkg(${p.id})">Edit</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteSitePkg(${p.id},'${esc(p.name)}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function editSitePkg(id) {
+  const p = _sitePkgs.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('site-pkg-edit-id').value = id;
+  document.getElementById('site-pkg-name').value    = p.name;
+  document.getElementById('site-pkg-price').value   = parseInt(p.price) || 0;
+  document.getElementById('site-pkg-about').value   = p.about || '';
+  document.getElementById('site-pkg-visible').checked = !!p.visible;
+}
+
+function resetSitePkgForm() {
+  document.getElementById('site-pkg-edit-id').value = '';
+  ['site-pkg-name','site-pkg-price','site-pkg-about'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('site-pkg-visible').checked = true;
+}
+
+async function saveSitePackage() {
+  const editId = document.getElementById('site-pkg-edit-id').value;
+  const name    = document.getElementById('site-pkg-name').value.trim();
+  const price   = parseInt(document.getElementById('site-pkg-price').value);
+  if (!name || isNaN(price)) { toast('Package title and price are required', 'error'); return; }
+  const body = {
+    name, price,
+    about: document.getElementById('site-pkg-about').value.trim(),
+    visible: document.getElementById('site-pkg-visible').checked ? 1 : 0,
   };
+  const url    = editId ? `/api/packages/${editId}` : '/api/packages';
+  const method = editId ? 'PUT' : 'POST';
   try {
-    const [res] = await Promise.all([
-      fetch('/api/packages', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      }),
-      fetch('/api/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tierNames),
-      }),
-    ]);
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const data = await res.json().catch(() => ({}));
     if (res.ok) {
-      toast('Packages saved — live site updated');
+      toast('Package saved — live site updated');
+      resetSitePkgForm();
+      loadSitePackages();
     } else if (res.status === 401) {
       toast('Session expired — please log in again', 'error');
       setTimeout(() => { window.location.href = '/admin/login'; }, 1500);
@@ -324,9 +308,14 @@ async function savePackages() {
     }
   } catch (err) {
     toast('Network error — check your connection', 'error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Save All Packages'; }
   }
+}
+
+async function deleteSitePkg(id, name) {
+  if (!confirm(`Delete package "${name}"? This cannot be undone.`)) return;
+  const res = await fetch(`/api/packages/${id}`, { method: 'DELETE' });
+  if (res.ok) { toast('Package deleted'); loadSitePackages(); }
+  else toast('Delete failed', 'error');
 }
 
 /* ── Media ── */

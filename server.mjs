@@ -500,19 +500,50 @@ app.get('/admin/dashboard', ipWhitelistCheck, requireAuth, (req, res) => {
    API: PACKAGES
 ═══════════════════════════════════════════════════════════ */
 app.get('/api/packages', (req, res) => {
-  const rows = db.prepare("SELECT * FROM packages ORDER BY CASE tier WHEN 'bronze' THEN 1 WHEN 'silver' THEN 2 ELSE 3 END, freq").all();
-  res.json(rows.map(r => ({ ...r, features: JSON.parse(r.features) })));
+  res.set('Cache-Control', 'no-store');
+  const rows = db.prepare('SELECT * FROM packages WHERE visible=1 ORDER BY sort_order ASC, id ASC').all();
+  res.json(rows);
 });
 
-app.put('/api/packages', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
-  if (!Array.isArray(req.body)) return res.status(400).json({ error: 'Expected array' });
-  const upd = db.prepare('UPDATE packages SET price=?,features=?,visible=? WHERE tier=? AND freq=?');
-  db.transaction(() => {
-    for (const p of req.body) {
-      upd.run(parseInt(p.price) || 0, JSON.stringify(Array.isArray(p.features) ? p.features : []), p.visible ?? 1, sanitize(p.tier, 20), parseInt(p.freq) || 0);
-    }
-  })();
-  logSecurity('admin_action', req, 'packages updated');
+app.get('/api/packages/all', requireAuth, (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const rows = db.prepare('SELECT * FROM packages ORDER BY sort_order ASC, id ASC').all();
+  res.json(rows);
+});
+
+app.post('/api/packages', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
+  const name  = sanitize(req.body?.name, 100);
+  const price = parseInt(req.body?.price) || 0;
+  const about = sanitize(req.body?.about || '', 2000);
+  const visible = req.body?.visible ?? 1;
+  if (!name) return res.status(400).json({ error: 'Package name required' });
+  const maxOrder = db.prepare('SELECT MAX(sort_order) as m FROM packages').get().m;
+  const sort_order = Number.isInteger(maxOrder) ? maxOrder + 1 : 0;
+  const result = db.prepare('INSERT INTO packages (name,price,about,visible,sort_order) VALUES (?,?,?,?,?)')
+    .run(name, price, about, visible ? 1 : 0, sort_order);
+  logSecurity('admin_action', req, `package ${result.lastInsertRowid} created`);
+  res.json({ ok: true, id: result.lastInsertRowid });
+});
+
+app.put('/api/packages/:id', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Invalid ID' });
+  const name  = sanitize(req.body?.name, 100);
+  const price = parseInt(req.body?.price) || 0;
+  const about = sanitize(req.body?.about || '', 2000);
+  const visible = req.body?.visible ?? 1;
+  if (!name) return res.status(400).json({ error: 'Package name required' });
+  db.prepare('UPDATE packages SET name=?,price=?,about=?,visible=? WHERE id=?')
+    .run(name, price, about, visible ? 1 : 0, id);
+  logSecurity('admin_action', req, `package ${id} updated`);
+  res.json({ ok: true });
+});
+
+app.delete('/api/packages/:id', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).json({ error: 'Invalid ID' });
+  db.prepare('DELETE FROM packages WHERE id=?').run(id);
+  logSecurity('admin_action', req, `package ${id} deleted`);
   res.json({ ok: true });
 });
 
@@ -636,7 +667,6 @@ const PUBLIC_SETTING_KEYS = new Set([
   'stats_show','stat1_num','stat1_label','stat2_num','stat2_label','stat3_num','stat3_label','stat4_num','stat4_label',
   'stats_num_color','stats_label_color','stats_bg_color','stats_padding_top','stats_padding_bottom',
   'packages_show','packages_title','packages_sub','packages_title_color','packages_bg_color','packages_padding_top','packages_padding_bottom',
-  'tier_bronze_name','tier_silver_name','tier_gold_name',
   'booking_show','booking_title','booking_sub','booking_title_color','booking_bg_color','booking_padding_top','booking_padding_bottom',
   'gallery_show','gallery_title','gallery_sub','gallery_title_color','gallery_bg_color','gallery_padding_top','gallery_padding_bottom',
   'contact_show','contact_title','contact_sub','contact_title_color','contact_bg_color','contact_padding_top','contact_padding_bottom',
@@ -900,6 +930,7 @@ app.get('/api/stripe-config', (req, res) => {
    API: SUBSCRIPTION PACKAGES (public)
 ═══════════════════════════════════════════════════════════ */
 app.get('/api/sub-packages', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   const rows = db.prepare('SELECT * FROM sub_packages WHERE visible=1 ORDER BY sort_order ASC, id ASC').all();
   res.json(rows.map(r => ({ ...r, features: JSON.parse(r.features || '[]') })));
 });

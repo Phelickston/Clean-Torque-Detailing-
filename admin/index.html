@@ -267,38 +267,6 @@
     .badge-gold      { background: rgba(212,175,55,.1);  color: var(--gold); }
 
     /* ─── PACKAGES ────────────────────────────────────────────── */
-    .pkg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .pkg-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
-    .pkg-card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .pkg-tier-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .pkg-tier-bronze .pkg-tier-dot { background: var(--bronze); }
-    .pkg-tier-silver .pkg-tier-dot { background: var(--silver-t); }
-    .pkg-tier-gold   .pkg-tier-dot { background: var(--gold); }
-    .pkg-tier-label  { font-weight: 600; font-size: .88rem; }
-    .pkg-freq-label  { font-size: .7rem; color: var(--muted); margin-left: auto; letter-spacing: 0.08em; text-transform: uppercase; }
-
-    .pkg-price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-    .pkg-price-row .currency { color: var(--muted); font-size: 1rem; }
-    .pkg-price-input {
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: var(--text);
-      width: 90px;
-      background: var(--surface2);
-      border: 1.5px solid var(--border2);
-      border-radius: 6px;
-      padding: 4px 8px;
-      transition: border-color 0.15s;
-    }
-    .pkg-price-input:hover { border-color: var(--blue); }
-    .pkg-price-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(26,111,255,.18); }
-    .pkg-price-row .per { color: var(--muted); font-size: .8rem; }
-
     .vis-toggle {
       display: flex;
       align-items: center;
@@ -311,17 +279,6 @@
     .vis-toggle input { width: auto; }
 
     .pkg-features-label { font-size: .68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-    .pkg-features-textarea {
-      font-size: .78rem;
-      min-height: 80px;
-      background: var(--surface2);
-      border: 1.5px solid var(--border2);
-      border-radius: 6px;
-      transition: border-color 0.15s;
-    }
-    .pkg-features-textarea:hover { border-color: var(--blue); }
-    .pkg-features-textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(26,111,255,.18); }
-
     .pkg-save-row { margin-top: 20px; display: flex; gap: 10px; }
 
     /* ─── GALLERY ─────────────────────────────────────────────── */
@@ -828,20 +785,25 @@
 
       <!-- ─── PACKAGES ─── -->
       <div class="section" id="sec-packages">
-        <div class="section-title">Package &amp; Pricing Manager</div>
-        <div class="section-sub">Edit prices and feature lists. Changes reflect on the live site immediately after saving.</div>
+        <div class="section-title">Package Manager</div>
+        <div class="section-sub">Add, edit, or remove the packages shown in the "Our Packages" section and the booking form. Changes reflect on the live site immediately after saving.</div>
 
-        <div style="margin-bottom:24px">
-          <div class="pkg-features-label" style="margin-bottom:10px">Tier Names</div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-            <div class="field"><label>Bronze Tier Name</label><input type="text" id="pkg-name-bronze" placeholder="BRONZE" /></div>
-            <div class="field"><label>Silver Tier Name</label><input type="text" id="pkg-name-silver" placeholder="SILVER" /></div>
-            <div class="field"><label>Gold Tier Name</label><input type="text" id="pkg-name-gold" placeholder="GOLD" /></div>
+        <div class="add-pkg-form">
+          <h3>Add / Edit Package</h3>
+          <p class="bsub">Create a package customers can choose when booking.</p>
+          <input type="hidden" id="site-pkg-edit-id" value="" />
+          <div class="bgrid2">
+            <div class="field"><label>Package Title</label><input type="text" id="site-pkg-name" placeholder="e.g. Premium Detail" /></div>
+            <div class="field"><label>Price (£)</label><input type="number" id="site-pkg-price" min="0" step="1" placeholder="60" /></div>
+          </div>
+          <div class="field"><label>About (what's included)</label><textarea id="site-pkg-about" rows="5" placeholder="Describe what this package includes…"></textarea></div>
+          <label class="vis-toggle" style="margin-top:4px"><input type="checkbox" id="site-pkg-visible" checked /><span>Visible on public site</span></label>
+          <div class="pkg-save-row">
+            <button class="btn btn-primary" onclick="saveSitePackage()">Save Package</button>
+            <button class="btn btn-ghost" onclick="resetSitePkgForm()">Clear</button>
           </div>
         </div>
-
-        <div id="pkgGrid" class="pkg-grid"></div>
-        <button class="btn btn-primary" onclick="savePackages()" style="margin-top:8px">Save All Packages</button>
+        <div id="site-pkg-grid" class="sub-pkg-grid"></div>
       </div>
 
       <!-- ─── GALLERY ─── -->
