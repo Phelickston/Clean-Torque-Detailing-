@@ -371,6 +371,9 @@
           if (s.packages_padding_bottom) pkgSec.style.paddingBottom = s.packages_padding_bottom + 'px';
           if (s.packages_bg_color)       pkgSec.style.background    = s.packages_bg_color;
         }
+        if (s.tier_bronze_name) { const e = document.getElementById('tier-name-bronze'); if (e) e.textContent = s.tier_bronze_name; }
+        if (s.tier_silver_name) { const e = document.getElementById('tier-name-silver'); if (e) e.textContent = s.tier_silver_name; }
+        if (s.tier_gold_name)   { const e = document.getElementById('tier-name-gold');   if (e) e.textContent = s.tier_gold_name; }
 
         // â”€â”€ Booking section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const bookSec = document.getElementById('booking');
@@ -417,7 +420,7 @@
         const pkgs = await fetch('/api/packages').then(r => r.json());
         for (const p of pkgs) {
           const priceEl = document.querySelector(`.sub-price[data-tier="${p.tier}"][data-freq="${p.freq}"]`);
-          if (priceEl) priceEl.innerHTML = `&pound;${p.price}<span>/mo</span>`;
+          if (priceEl) priceEl.innerHTML = p.freq === 1 ? `&pound;${p.price}` : `&pound;${p.price}<span>/mo</span>`;
           const featuresList = document.querySelector(`.sub-features[data-tier="${p.tier}"][data-freq="${p.freq}"]`);
           if (featuresList && p.features?.length) {
             featuresList.innerHTML = p.features.map(f => `<li class="sub-feature">${f}</li>`).join('');

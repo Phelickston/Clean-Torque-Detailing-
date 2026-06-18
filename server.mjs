@@ -636,6 +636,7 @@ const PUBLIC_SETTING_KEYS = new Set([
   'stats_show','stat1_num','stat1_label','stat2_num','stat2_label','stat3_num','stat3_label','stat4_num','stat4_label',
   'stats_num_color','stats_label_color','stats_bg_color','stats_padding_top','stats_padding_bottom',
   'packages_show','packages_title','packages_sub','packages_title_color','packages_bg_color','packages_padding_top','packages_padding_bottom',
+  'tier_bronze_name','tier_silver_name','tier_gold_name',
   'booking_show','booking_title','booking_sub','booking_title_color','booking_bg_color','booking_padding_top','booking_padding_bottom',
   'gallery_show','gallery_title','gallery_sub','gallery_title_color','gallery_bg_color','gallery_padding_top','gallery_padding_bottom',
   'contact_show','contact_title','contact_sub','contact_title_color','contact_bg_color','contact_padding_top','contact_padding_bottom',

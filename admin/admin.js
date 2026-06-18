@@ -232,8 +232,23 @@ async function deleteContact(id) {
 
 /* ── Packages ── */
 async function loadPackages() {
-  allPackages = await fetch('/api/packages').then(r => r.json());
   const grid = document.getElementById('pkgGrid');
+  grid.innerHTML = '<p style="color:var(--muted);font-size:.83rem">Loading packages…</p>';
+  try {
+    const [pkgRes, settingsRes] = await Promise.all([
+      fetch('/api/packages'),
+      fetch('/api/settings'),
+    ]);
+    if (!pkgRes.ok) throw new Error(`Server error ${pkgRes.status}`);
+    allPackages = await pkgRes.json();
+    const s = settingsRes.ok ? await settingsRes.json() : {};
+    document.getElementById('pkg-name-bronze').value = s.tier_bronze_name || 'BRONZE';
+    document.getElementById('pkg-name-silver').value = s.tier_silver_name || 'SILVER';
+    document.getElementById('pkg-name-gold').value   = s.tier_gold_name   || 'GOLD';
+  } catch (err) {
+    grid.innerHTML = `<p style="color:var(--red);font-size:.83rem">Failed to load packages: ${err.message}. Please refresh.</p>`;
+    return;
+  }
   const tierInfo = {
     bronze: { label:'Bronze', cls:'pkg-tier-bronze', emoji:'🥉' },
     silver: { label:'Silver', cls:'pkg-tier-silver', emoji:'🥈' },
@@ -241,17 +256,18 @@ async function loadPackages() {
   };
   grid.innerHTML = allPackages.map(p => {
     const t = tierInfo[p.tier] || {};
+    const freqLabel = p.freq === 1 ? 'Wash Once' : `${p.freq} / month`;
     const featuresText = (p.features || []).join('\n');
     return `<div class="pkg-card ${t.cls}">
       <div class="pkg-card-header">
         <div class="pkg-tier-dot"></div>
         <div class="pkg-tier-label">${t.emoji} ${t.label}</div>
-        <div class="pkg-freq-label">${p.freq} / month</div>
+        <div class="pkg-freq-label">${freqLabel}</div>
       </div>
       <div class="pkg-price-row">
         <span class="currency">£</span>
         <input class="pkg-price-input" type="number" min="0" max="9999" value="${p.price}" data-tier="${p.tier}" data-freq="${p.freq}" data-field="price" />
-        <span class="per">/mo</span>
+        <span class="per">${p.freq === 1 ? 'one-time' : '/mo'}</span>
       </div>
       <label class="vis-toggle">
         <input type="checkbox" ${p.visible ? 'checked' : ''} data-tier="${p.tier}" data-freq="${p.freq}" data-field="visible" /> Visible on site
@@ -263,6 +279,9 @@ async function loadPackages() {
 }
 
 async function savePackages() {
+  if (!allPackages.length) { toast('No packages loaded — please refresh the page', 'error'); return; }
+  const btn = document.querySelector('#sec-packages .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
   const updated = allPackages.map(p => {
     const price   = document.querySelector(`input[data-tier="${p.tier}"][data-freq="${p.freq}"][data-field="price"]`);
     const vis     = document.querySelector(`input[data-tier="${p.tier}"][data-freq="${p.freq}"][data-field="visible"]`);
@@ -274,13 +293,40 @@ async function savePackages() {
       features: featTa?.value.split('\n').map(s => s.trim()).filter(Boolean) || p.features,
     };
   });
-  const res = await fetch('/api/packages', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updated),
-  });
-  if (res.ok) toast('Packages saved — live site updated');
-  else toast('Save failed', 'error');
+  const tierNames = {
+    tier_bronze_name: document.getElementById('pkg-name-bronze').value.trim() || 'BRONZE',
+    tier_silver_name: document.getElementById('pkg-name-silver').value.trim() || 'SILVER',
+    tier_gold_name:   document.getElementById('pkg-name-gold').value.trim()   || 'GOLD',
+  };
+  try {
+    const [res] = await Promise.all([
+      fetch('/api/packages', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      }),
+      fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tierNames),
+      }),
+    ]);
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      toast('Packages saved — live site updated');
+    } else if (res.status === 401) {
+      toast('Session expired — please log in again', 'error');
+      setTimeout(() => { window.location.href = '/admin/login'; }, 1500);
+    } else if (res.status === 403) {
+      toast(data.error === 'Insufficient permissions' ? 'Your account does not have permission to edit packages' : 'Security check failed — please refresh the page', 'error');
+    } else {
+      toast(data.error || 'Save failed — please try again', 'error');
+    }
+  } catch (err) {
+    toast('Network error — check your connection', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Save All Packages'; }
+  }
 }
 
 /* ── Media ── */

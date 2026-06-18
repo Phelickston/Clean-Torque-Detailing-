@@ -267,7 +267,7 @@
     .badge-gold      { background: rgba(212,175,55,.1);  color: var(--gold); }
 
     /* ─── PACKAGES ────────────────────────────────────────────── */
-    .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .pkg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
     .pkg-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
     .pkg-card-header {
       display: flex;
@@ -289,11 +289,14 @@
       font-weight: 600;
       color: var(--text);
       width: 90px;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
       border-radius: 6px;
       padding: 4px 8px;
+      transition: border-color 0.15s;
     }
+    .pkg-price-input:hover { border-color: var(--blue); }
+    .pkg-price-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(26,111,255,.18); }
     .pkg-price-row .per { color: var(--muted); font-size: .8rem; }
 
     .vis-toggle {
@@ -308,7 +311,16 @@
     .vis-toggle input { width: auto; }
 
     .pkg-features-label { font-size: .68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-    .pkg-features-textarea { font-size: .78rem; min-height: 80px; }
+    .pkg-features-textarea {
+      font-size: .78rem;
+      min-height: 80px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: 6px;
+      transition: border-color 0.15s;
+    }
+    .pkg-features-textarea:hover { border-color: var(--blue); }
+    .pkg-features-textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(26,111,255,.18); }
 
     .pkg-save-row { margin-top: 20px; display: flex; gap: 10px; }
 
@@ -818,6 +830,16 @@
       <div class="section" id="sec-packages">
         <div class="section-title">Package &amp; Pricing Manager</div>
         <div class="section-sub">Edit prices and feature lists. Changes reflect on the live site immediately after saving.</div>
+
+        <div style="margin-bottom:24px">
+          <div class="pkg-features-label" style="margin-bottom:10px">Tier Names</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+            <div class="field"><label>Bronze Tier Name</label><input type="text" id="pkg-name-bronze" placeholder="BRONZE" /></div>
+            <div class="field"><label>Silver Tier Name</label><input type="text" id="pkg-name-silver" placeholder="SILVER" /></div>
+            <div class="field"><label>Gold Tier Name</label><input type="text" id="pkg-name-gold" placeholder="GOLD" /></div>
+          </div>
+        </div>
+
         <div id="pkgGrid" class="pkg-grid"></div>
         <button class="btn btn-primary" onclick="savePackages()" style="margin-top:8px">Save All Packages</button>
       </div>

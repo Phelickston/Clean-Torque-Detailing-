@@ -1601,7 +1601,7 @@
           <div class="tier-header" role="button" tabindex="0" aria-expanded="false">
             <div>
               <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#CD7F32" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#CD7F32" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">3</text></svg></div>
-              <div class="tier-name" style="margin-top:12px">BRONZE</div>
+              <div class="tier-name" id="tier-name-bronze" style="margin-top:12px">BRONZE</div>
               <div class="tier-tagline">Essential Care</div>
             </div>
             <div class="tier-toggle" aria-hidden="true">
@@ -1613,9 +1613,9 @@
             <div class="sub-plan sub-plan-once">
               <div class="sub-plan-top">
                 <div class="sub-freq">Wash Once <span class="once-badge">ONE-TIME</span></div>
-                <div class="sub-price">&pound;18</div>
+                <div class="sub-price" data-tier="bronze" data-freq="1">&pound;18</div>
               </div>
-              <ul class="sub-features">
+              <ul class="sub-features" data-tier="bronze" data-freq="1">
                 <li class="sub-feature">Exterior hand wash &amp; rinse</li>
                 <li class="sub-feature">Wheel clean &amp; tyre dressing</li>
                 <li class="sub-feature">Window polish (exterior)</li>
@@ -1673,7 +1673,7 @@
           <div class="tier-header" role="button" tabindex="0" aria-expanded="false">
             <div>
               <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#A8A9AD" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#A8A9AD" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">2</text></svg></div>
-              <div class="tier-name" style="margin-top:12px">SILVER</div>
+              <div class="tier-name" id="tier-name-silver" style="margin-top:12px">SILVER</div>
               <div class="tier-tagline">Enhanced Protection</div>
             </div>
             <div class="tier-toggle" aria-hidden="true">
@@ -1685,9 +1685,9 @@
             <div class="sub-plan sub-plan-once">
               <div class="sub-plan-top">
                 <div class="sub-freq">Wash Once <span class="once-badge">ONE-TIME</span></div>
-                <div class="sub-price">&pound;28</div>
+                <div class="sub-price" data-tier="silver" data-freq="1">&pound;28</div>
               </div>
-              <ul class="sub-features">
+              <ul class="sub-features" data-tier="silver" data-freq="1">
                 <li class="sub-feature">All Bronze features</li>
                 <li class="sub-feature">Clay bar decontamination</li>
                 <li class="sub-feature">Paint sealant application</li>
@@ -1742,7 +1742,7 @@
           <div class="tier-header" role="button" tabindex="0" aria-expanded="false">
             <div>
               <div class="tier-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="14" r="7" fill="#D4AF37" opacity=".9"/><path d="M9 7V3l3 2 3-2v4" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"/><text x="12" y="18" text-anchor="middle" font-size="8" fill="white" font-weight="bold">1</text></svg></div>
-              <div class="tier-name" style="margin-top:12px">GOLD</div>
+              <div class="tier-name" id="tier-name-gold" style="margin-top:12px">GOLD</div>
               <div class="tier-tagline">Ultimate Luxury</div>
             </div>
             <div class="tier-toggle" aria-hidden="true">
@@ -1754,9 +1754,9 @@
             <div class="sub-plan sub-plan-once">
               <div class="sub-plan-top">
                 <div class="sub-freq">Wash Once <span class="once-badge">ONE-TIME</span></div>
-                <div class="sub-price">&pound;45</div>
+                <div class="sub-price" data-tier="gold" data-freq="1">&pound;45</div>
               </div>
-              <ul class="sub-features">
+              <ul class="sub-features" data-tier="gold" data-freq="1">
                 <li class="sub-feature">All Silver features</li>
                 <li class="sub-feature">Full ceramic coat top-up</li>
                 <li class="sub-feature">Paint correction included</li>
