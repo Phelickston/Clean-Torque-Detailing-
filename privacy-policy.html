@@ -241,7 +241,7 @@
         const contentEl = document.getElementById("legal-content");
         if (titleEl && data.title) titleEl.innerHTML = data.title;
         if (dateEl && data.updated_label) dateEl.innerHTML = data.updated_label;
-        if (contentEl && typeof data.content === "string") contentEl.innerHTML = data.content;
+        if (contentEl && typeof data.content_html === "string") contentEl.innerHTML = data.content_html;
       })
       .catch(() => {});
   </script>

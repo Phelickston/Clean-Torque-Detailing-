@@ -601,13 +601,78 @@ app.delete('/api/addons/:id', requireAuth, requireRole('super_admin', 'editor'),
 ═══════════════════════════════════════════════════════════ */
 const LEGAL_SLUGS = new Set(['terms', 'privacy-policy']);
 
+// Legal page content is stored as plain-text Markdown so the admin can edit it without HTML.
+// This renders that Markdown to HTML for display on the live site.
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function inlineFormat(raw) {
+  let text = escapeHtml(raw);
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label, url) => {
+    const external = /^https?:\/\//.test(url);
+    const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : '';
+    return `<a href="${url}"${attrs}>${label}</a>`;
+  });
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  return text;
+}
+
+function legalMarkdownToHtml(md) {
+  if (!md) return '';
+  const lines = String(md).replace(/\r\n/g, '\n').split('\n');
+  let html = '';
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.trim() === '') { i++; continue; }
+    if (/^### /.test(line)) { html += `<h3>${inlineFormat(line.slice(4).trim())}</h3>\n`; i++; continue; }
+    if (/^## /.test(line)) { html += `<h2>${inlineFormat(line.slice(3).trim())}</h2>\n`; i++; continue; }
+    if (/^- /.test(line)) {
+      const items = [];
+      while (i < lines.length && /^- /.test(lines[i])) { items.push(inlineFormat(lines[i].slice(2).trim())); i++; }
+      html += '<ul>' + items.map(it => `<li>${it}</li>`).join('') + '</ul>\n';
+      continue;
+    }
+    if (/^> /.test(line) || line.trim() === '>') {
+      const items = [];
+      while (i < lines.length && (/^> /.test(lines[i]) || lines[i].trim() === '>')) {
+        const t = lines[i].replace(/^>\s?/, '').trim();
+        if (t) items.push(inlineFormat(t));
+        i++;
+      }
+      html += '<div class="notice">' + items.map(p => `<p>${p}</p>`).join('') + '</div>\n';
+      continue;
+    }
+    if (/^\|/.test(line)) {
+      const parseCells = (l) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+      const headerCells = parseCells(line);
+      i++;
+      if (i < lines.length && /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/.test(lines[i])) i++;
+      const rows = [];
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(parseCells(lines[i])); i++; }
+      html += '<div class="tbl-wrap"><table><thead><tr>' +
+        headerCells.map(c => `<th>${inlineFormat(c)}</th>`).join('') +
+        '</tr></thead><tbody>' +
+        rows.map(r => '<tr>' + r.map(c => `<td>${inlineFormat(c)}</td>`).join('') + '</tr>').join('') +
+        '</tbody></table></div>\n';
+      continue;
+    }
+    const paraLines = [line];
+    i++;
+    while (i < lines.length && lines[i].trim() !== '' && !/^(#{2,3} |- |> |\|)/.test(lines[i])) { paraLines.push(lines[i]); i++; }
+    html += `<p>${paraLines.map(inlineFormat).join('<br>\n')}</p>\n`;
+  }
+  return html;
+}
+
 app.get('/api/legal/:slug', (req, res) => {
   res.set('Cache-Control', 'no-store');
   const slug = sanitize(req.params.slug, 50);
   if (!LEGAL_SLUGS.has(slug)) return res.status(404).json({ error: 'Not found' });
   const row = db.prepare('SELECT * FROM legal_pages WHERE slug=?').get(slug);
   if (!row) return res.status(404).json({ error: 'Not found' });
-  res.json(row);
+  res.json({ ...row, content_html: legalMarkdownToHtml(row.content) });
 });
 
 app.put('/api/legal/:slug', requireAuth, requireRole('super_admin', 'editor'), (req, res) => {

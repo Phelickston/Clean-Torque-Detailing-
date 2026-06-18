@@ -1093,7 +1093,13 @@
             <div class="field"><label>Page Title</label><input type="text" id="legal-terms-title" placeholder="TERMS &amp; CONDITIONS" /></div>
             <div class="field"><label>Last Updated Label</label><input type="text" id="legal-terms-updated" placeholder="Last updated: May 2025 — Version 1.0" /></div>
           </div>
-          <div class="field"><label>Content (HTML)</label><textarea id="legal-terms-content" class="legal-content-textarea" rows="18" placeholder="&lt;h2&gt;1. About Us&lt;/h2&gt;&#10;&lt;p&gt;...&lt;/p&gt;"></textarea></div>
+          <div class="field">
+            <label>Content (plain text)</label>
+            <p style="font-size:.78rem;color:var(--muted);margin:0 0 8px;">
+              Write in plain text. Leave a blank line between paragraphs. Use <code>## </code> for a heading, <code>- </code> for a bullet point, <code>**bold**</code> for bold, and <code>[link text](https://example.com)</code> for a link.
+            </p>
+            <textarea id="legal-terms-content" class="legal-content-textarea" rows="18" placeholder="## 1. About Us&#10;&#10;Write your paragraph here in plain text.&#10;&#10;- A bullet point&#10;- Another bullet point"></textarea>
+          </div>
           <div class="pkg-save-row">
             <button class="btn btn-primary" onclick="saveLegalPage('terms')">Save Terms &amp; Conditions</button>
             <button class="btn btn-ghost" onclick="clearLegalContent('terms')">Clear Content</button>
@@ -1107,7 +1113,13 @@
             <div class="field"><label>Page Title</label><input type="text" id="legal-privacy-policy-title" placeholder="PRIVACY POLICY" /></div>
             <div class="field"><label>Last Updated Label</label><input type="text" id="legal-privacy-policy-updated" placeholder="Last updated: May 2026 — Version 1.1" /></div>
           </div>
-          <div class="field"><label>Content (HTML)</label><textarea id="legal-privacy-policy-content" class="legal-content-textarea" rows="18" placeholder="&lt;h2&gt;1. Introduction&lt;/h2&gt;&#10;&lt;p&gt;...&lt;/p&gt;"></textarea></div>
+          <div class="field">
+            <label>Content (plain text)</label>
+            <p style="font-size:.78rem;color:var(--muted);margin:0 0 8px;">
+              Write in plain text. Leave a blank line between paragraphs. Use <code>## </code> for a heading, <code>- </code> for a bullet point, <code>**bold**</code> for bold, and <code>[link text](https://example.com)</code> for a link.
+            </p>
+            <textarea id="legal-privacy-policy-content" class="legal-content-textarea" rows="18" placeholder="## 1. Introduction&#10;&#10;Write your paragraph here in plain text.&#10;&#10;- A bullet point&#10;- Another bullet point"></textarea>
+          </div>
           <div class="pkg-save-row">
             <button class="btn btn-primary" onclick="saveLegalPage('privacy-policy')">Save Privacy Policy</button>
             <button class="btn btn-ghost" onclick="clearLegalContent('privacy-policy')">Clear Content</button>

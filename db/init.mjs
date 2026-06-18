@@ -226,6 +226,93 @@ if (addonCount.c === 0) {
   ins.run('Ceramic Top-Up', 45, 3);
 }
 
+/* ── Legal pages: stored as plain-text Markdown, rendered to HTML for the live site ── */
+function decodeEntities(s) {
+  return s
+    .replace(/&amp;/g, '&').replace(/&rsquo;/g, '’').replace(/&lsquo;/g, '‘')
+    .replace(/&rdquo;/g, '”').replace(/&ldquo;/g, '“')
+    .replace(/&mdash;/g, '—').replace(/&ndash;/g, '–')
+    .replace(/&hellip;/g, '…').replace(/&copy;/g, '©')
+    .replace(/&pound;/g, '£').replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+}
+
+function inlineHtmlToMd(s) {
+  // Collapse the original HTML source's formatting whitespace/newlines first,
+  // so only explicit <br> tags become real line breaks below.
+  s = s.replace(/\s+/g, ' ').trim();
+  s = s.replace(/<br\s*\/?>/g, '\n');
+  s = s.replace(/<a\s+href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g, '[$2]($1)');
+  s = s.replace(/<strong>([\s\S]*?)<\/strong>/g, '**$1**');
+  s = s.replace(/<\/?em>/g, '');
+  s = decodeEntities(s);
+  s = s.split('\n').map(l => l.trim()).join('\n').trim();
+  return s;
+}
+
+function htmlToMarkdownForLegal(html) {
+  const out = [];
+  let rest = html.trim();
+  while (rest.length) {
+    rest = rest.trimStart();
+    if (!rest) break;
+    const m = rest.match(/^<(h2|h3|p)>/i);
+    if (m) {
+      const tag = m[1].toLowerCase();
+      const closeTag = `</${tag}>`;
+      const closeIdx = rest.indexOf(closeTag);
+      const inner = rest.slice(m[0].length, closeIdx);
+      rest = rest.slice(closeIdx + closeTag.length);
+      const text = inlineHtmlToMd(inner);
+      if (tag === 'h2') out.push('## ' + text);
+      else if (tag === 'h3') out.push('### ' + text);
+      else out.push(text);
+      continue;
+    }
+    if (/^<ul>/i.test(rest)) {
+      const closeIdx = rest.indexOf('</ul>');
+      const inner = rest.slice(4, closeIdx);
+      rest = rest.slice(closeIdx + 5);
+      const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(mm => '- ' + inlineHtmlToMd(mm[1]));
+      out.push(items.join('\n'));
+      continue;
+    }
+    if (/^<div class="notice">/i.test(rest)) {
+      const closeIdx = rest.indexOf('</div>');
+      const inner = rest.slice(rest.indexOf('>') + 1, closeIdx);
+      rest = rest.slice(closeIdx + 6);
+      const paras = [...inner.matchAll(/<p>([\s\S]*?)<\/p>/g)].map(mm =>
+        inlineHtmlToMd(mm[1]).split('\n').map(line => '> ' + line).join('\n')
+      );
+      out.push(paras.join('\n>\n'));
+      continue;
+    }
+    if (/^<div class="tbl-wrap">/i.test(rest) || /^<table>/i.test(rest)) {
+      const isWrapped = /^<div class="tbl-wrap">/i.test(rest);
+      let tableHtml;
+      if (isWrapped) {
+        const closeIdx = rest.indexOf('</div>');
+        tableHtml = rest.slice(0, closeIdx + 6);
+        rest = rest.slice(closeIdx + 6);
+      } else {
+        const closeIdx = rest.indexOf('</table>');
+        tableHtml = rest.slice(0, closeIdx + 8);
+        rest = rest.slice(closeIdx + 8);
+      }
+      const headerCells = [...tableHtml.matchAll(/<th>([\s\S]*?)<\/th>/g)].map(mm => inlineHtmlToMd(mm[1]).replace(/\n/g, ' '));
+      const rowsHtml = [...tableHtml.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].slice(1);
+      const rows = rowsHtml.map(rm => [...rm[1].matchAll(/<td>([\s\S]*?)<\/td>/g)].map(cm => inlineHtmlToMd(cm[1]).replace(/\n/g, ' ')));
+      const sep = headerCells.map(() => '---');
+      out.push('| ' + headerCells.join(' | ') + ' |\n|' + sep.join('|') + '|\n' + rows.map(r => '| ' + r.join(' | ') + ' |').join('\n'));
+      continue;
+    }
+    // Unrecognized markup — stop converting and keep whatever was parsed so far.
+    break;
+  }
+  return out.join('\n\n');
+}
+
 /* ── Seed legal pages (one-time extraction from the existing static HTML) ── */
 function extractLegalSeed(htmlPath) {
   if (!fs.existsSync(htmlPath)) return null;
@@ -256,7 +343,7 @@ function extractLegalSeed(htmlPath) {
   return {
     title:         html.slice(titleTagEnd, titleEnd).trim(),
     updated_label: html.slice(dateTagEnd, dateEnd).trim(),
-    content,
+    content:       htmlToMarkdownForLegal(content),
   };
 }
 
@@ -267,6 +354,13 @@ if (legalCount.c === 0) {
   const privacySeed = extractLegalSeed(path.join(__dirname, '..', 'privacy-policy.html'));
   if (termsSeed)   ins.run('terms', termsSeed.title, termsSeed.updated_label, termsSeed.content);
   if (privacySeed) ins.run('privacy-policy', privacySeed.title, privacySeed.updated_label, privacySeed.content);
+} else {
+  // Migrate any rows still holding raw HTML (seeded before the switch to plain-text Markdown editing)
+  const htmlRows = db.prepare('SELECT slug, content FROM legal_pages').all().filter(r => r.content.trim().startsWith('<'));
+  if (htmlRows.length) {
+    const upd = db.prepare('UPDATE legal_pages SET content=? WHERE slug=?');
+    for (const row of htmlRows) upd.run(htmlToMarkdownForLegal(row.content), row.slug);
+  }
 }
 
 /* ── Seed settings ── */
