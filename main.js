@@ -434,6 +434,13 @@
             if (pkgEmpty) pkgEmpty.style.display = '';
           }
         }
+        // Populate footer "Packages" links from the same list
+        const footerPkgList = document.getElementById('footer-packages-list');
+        if (footerPkgList) {
+          footerPkgList.innerHTML = pkgs.map(p => `<li><a href="#packages">${escHtml(p.name)}</a></li>`).join('')
+            + '<li><a href="#booking">Add-ons</a></li>';
+        }
+
         // Populate booking form's package step from the same list
         const pkgOptionsEl = document.getElementById('pkg-options');
         if (pkgOptionsEl) {
