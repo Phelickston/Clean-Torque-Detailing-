@@ -379,7 +379,7 @@ const defaults = {
   hero_cta1_link: '#packages',
   hero_cta2_text: 'Book a Session',
   hero_cta2_link: '#booking',
-  hero_bg_url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80',
+  hero_bg_url: '/assets/hero-mobile.jpg',
   hero_tag_color: '#1A6FFF',
   hero_headline_color: '#F5F5F5',
   hero_accent_color: '#6B6B6B',

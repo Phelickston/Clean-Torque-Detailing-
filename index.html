@@ -265,6 +265,13 @@
       height: 100%;
       object-fit: cover;
     }
+    .hero-bg-mobile {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
     .hero-bg::after {
       content: '';
       position: absolute;
@@ -1391,11 +1398,34 @@
     </div>
     <div class="slide-dots" id="slide-dots" style="display:none"></div>
     <!-- Static hero fallback (shown when no slides or slideshow disabled) -->
-    <div class="hero-bg" id="hero-bg">
-      <video class="hero-bg-video" autoplay muted loop playsinline preload="auto" poster="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80">
-        <source src="/assets/hero-video.mp4" type="video/mp4" />
-      </video>
-    </div>
+    <div class="hero-bg" id="hero-bg"></div>
+    <script>
+      (function () {
+        // Built entirely in JS (never as static <video src> markup) so the
+        // browser's preload scanner can never speculatively fetch the video
+        // on mobile — only the lightweight JPEG loads there.
+        var bg = document.getElementById('hero-bg');
+        if (!bg) return;
+        if (window.matchMedia('(max-width:767px)').matches) {
+          bg.classList.add('hero-bg-mobile');
+          bg.style.backgroundImage = "url('/assets/hero-mobile.jpg')";
+        } else {
+          var v = document.createElement('video');
+          v.className = 'hero-bg-video';
+          v.autoplay = true;
+          v.muted = true;
+          v.loop = true;
+          v.playsInline = true;
+          v.preload = 'auto';
+          v.poster = '/assets/hero-mobile.jpg';
+          var source = document.createElement('source');
+          source.src = '/assets/hero-video.mp4';
+          source.type = 'video/mp4';
+          v.appendChild(source);
+          bg.appendChild(v);
+        }
+      })();
+    </script>
     <div class="container" id="hero-static-content">
       <div class="hero-content">
         <div class="hero-tag fade-in" data-hero="tag">Vehicle Appearance Specialists</div>
