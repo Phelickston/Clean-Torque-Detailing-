@@ -265,13 +265,6 @@
       height: 100%;
       object-fit: cover;
     }
-    .hero-bg-mobile {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
     .hero-bg::after {
       content: '';
       position: absolute;
@@ -1401,29 +1394,28 @@
     <div class="hero-bg" id="hero-bg"></div>
     <script>
       (function () {
-        // Built entirely in JS (never as static <video src> markup) so the
-        // browser's preload scanner can never speculatively fetch the video
-        // on mobile — only the lightweight JPEG loads there.
+        // Video plays on every device, including mobile — the clip is
+        // compressed to ~1.2MB specifically so this is safe on cellular.
         var bg = document.getElementById('hero-bg');
         if (!bg) return;
-        if (window.matchMedia('(max-width:767px)').matches) {
-          bg.classList.add('hero-bg-mobile');
-          bg.style.backgroundImage = "url('/assets/hero-mobile.jpg')";
-        } else {
-          var v = document.createElement('video');
-          v.className = 'hero-bg-video';
-          v.autoplay = true;
-          v.muted = true;
-          v.loop = true;
-          v.playsInline = true;
-          v.preload = 'auto';
-          v.poster = '/assets/hero-mobile.jpg';
-          var source = document.createElement('source');
-          source.src = '/assets/hero-video.mp4';
-          source.type = 'video/mp4';
-          v.appendChild(source);
-          bg.appendChild(v);
-        }
+        var v = document.createElement('video');
+        v.className = 'hero-bg-video';
+        v.autoplay = true;
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.setAttribute('webkit-playsinline', 'true');
+        v.preload = 'auto';
+        v.poster = '/assets/hero-mobile.jpg';
+        var source = document.createElement('source');
+        source.src = '/assets/hero-video.mp4';
+        source.type = 'video/mp4';
+        v.appendChild(source);
+        bg.appendChild(v);
+        // Some mobile browsers ignore the autoplay attribute if it's set
+        // before the element is in the DOM; force it explicitly too.
+        var playPromise = v.play();
+        if (playPromise && playPromise.catch) playPromise.catch(function () {});
       })();
     </script>
     <div class="container" id="hero-static-content">
