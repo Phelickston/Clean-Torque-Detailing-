@@ -778,6 +778,32 @@
     .testimonial-info { padding: 16px; }
     .testimonial-name { font-weight: 600; font-size: .88rem; }
     .testimonial-vehicle { font-size: .75rem; color: var(--silver-lo); margin-top: 3px; }
+    .testimonials-coming-soon {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 56px 24px;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(196,196,196,.15);
+      background: rgba(255,255,255,.02);
+    }
+    .testimonials-coming-soon .play-btn-circle {
+      position: static;
+      margin: 0 auto 20px;
+      opacity: .8;
+    }
+    .testimonials-coming-soon-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: .02em;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .testimonials-coming-soon-sub {
+      font-size: .85rem;
+      color: var(--silver-lo);
+      max-width: 420px;
+      margin: 0 auto;
+    }
 
     /* Lightbox */
     #lightbox {
@@ -1658,47 +1684,12 @@
       </div>
 
       <div class="testimonials-grid fade-in">
-        <div class="testimonial-card">
-          <div class="testimonial-thumb">
-            <img src="https://placehold.co/480x270/0D0D0D/C4C4C4?text=Video+Testimonial" alt="Testimonial" loading="lazy" />
-            <div class="play-btn">
-              <div class="play-btn-circle">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </div>
-            </div>
+        <div class="testimonials-coming-soon">
+          <div class="play-btn-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
-          <div class="testimonial-info">
-            <div class="testimonial-name">James T.</div>
-            <div class="testimonial-vehicle">BMW M5 &mdash; Gold Plan</div>
-          </div>
-        </div>
-        <div class="testimonial-card">
-          <div class="testimonial-thumb">
-            <img src="https://placehold.co/480x270/0A1628/C4C4C4?text=Video+Testimonial" alt="Testimonial" loading="lazy" />
-            <div class="play-btn">
-              <div class="play-btn-circle">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="testimonial-info">
-            <div class="testimonial-name">Sarah K.</div>
-            <div class="testimonial-vehicle">Porsche 911 &mdash; Silver Plan</div>
-          </div>
-        </div>
-        <div class="testimonial-card">
-          <div class="testimonial-thumb">
-            <img src="https://placehold.co/480x270/0D0D0D/1A6FFF?text=Video+Testimonial" alt="Testimonial" loading="lazy" />
-            <div class="play-btn">
-              <div class="play-btn-circle">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="testimonial-info">
-            <div class="testimonial-name">Marcus O.</div>
-            <div class="testimonial-vehicle">Audi RS6 &mdash; Gold Plan</div>
-          </div>
+          <div class="testimonials-coming-soon-title">Video Testimonials Coming Soon</div>
+          <div class="testimonials-coming-soon-sub">We're collecting real stories from happy customers &mdash; check back soon.</div>
         </div>
       </div>
     </div>
