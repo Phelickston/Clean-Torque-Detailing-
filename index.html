@@ -255,17 +255,26 @@
     .hero-bg {
       position: absolute;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 60% 55%, rgba(26,111,255,.12) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(26,111,255,.06) 0%, transparent 60%),
-        linear-gradient(180deg, rgba(13,13,13,0) 0%, rgba(13,13,13,.7) 70%, var(--black) 100%),
-        url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80') center/cover no-repeat;
+      overflow: hidden;
+      background: var(--black);
+    }
+    .hero-bg-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .hero-bg::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba(13,13,13,.55);
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 55%, rgba(26,111,255,.12) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(26,111,255,.06) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(13,13,13,.15) 0%, rgba(13,13,13,.75) 70%, var(--black) 100%),
+        rgba(13,13,13,.45);
     }
     /* shimmer sweep */
     .hero-bg::before {
@@ -1382,7 +1391,11 @@
     </div>
     <div class="slide-dots" id="slide-dots" style="display:none"></div>
     <!-- Static hero fallback (shown when no slides or slideshow disabled) -->
-    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-bg" id="hero-bg">
+      <video class="hero-bg-video" autoplay muted loop playsinline preload="auto" poster="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80">
+        <source src="/assets/hero-video.mp4" type="video/mp4" />
+      </video>
+    </div>
     <div class="container" id="hero-static-content">
       <div class="hero-content">
         <div class="hero-tag fade-in" data-hero="tag">Vehicle Appearance Specialists</div>
